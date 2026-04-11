@@ -14,8 +14,8 @@ export function LoginForm() {
   const [Login, Setlogin] = useState(true)
 
   return (
-    <div className="flex items-center justify-center p-4 antialiased" dir="rtl">
-      <Card className="w-full max-w-[420px] rounded-[2.5rem] border-none shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-6 md:p-10 bg-white">
+    <div className="   flex items-center justify-center p-4 antialiased" dir="rtl">
+      <Card className=" w-full max-w-[420px] rounded-[2.5rem] border-none shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-6 md:p-10 bg-white">
         
         <CardHeader className="space-y-2 text-center p-0 mb-8">
           <CardTitle className="text-2xl font-bold text-[#0f172a]">
