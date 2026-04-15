@@ -1,11 +1,12 @@
 import './App.css'
-import Auth_page from './pages/Auth/Auth_page'
-import Branch_page from './pages/Branch/Branch_page'
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard'
 
 function App() {
 
   return (
+
     <>
+    <AdminDashboard/>
     </>
   )
 }
