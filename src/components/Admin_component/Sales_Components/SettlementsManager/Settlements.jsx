@@ -10,7 +10,8 @@ function Settlements() {
   const [CustomDates, SetCustomDates] = useState({ from: '', to: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
-  
+
+  {/* mock api data */}
   const [apiData, SetApiData] = useState({
     statistics: {
       settlements_count: 3,
@@ -24,9 +25,14 @@ function Settlements() {
     ]
   });
 
+  {/* handle period change */}
   const handlePeriodChange = (newPeriod) => {
     setPeriod(newPeriod);
   };
+
+  {/*////////////////////////////////////////////////////////////////////////////////////////// */}
+  {/*////////////////////////////////////////////////////////////////////////////////////////// */}
+
 
   return (
     <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-8" dir="rtl">
