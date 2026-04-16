@@ -1,12 +1,13 @@
 import './App.css'
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard'
+import Settlements_page from './pages/Settlements/Settlements_page'
 
 function App() {
 
   return (
 
     <>
-    <AdminDashboard/>
+    <Settlements_page/>
     </>
   )
 }

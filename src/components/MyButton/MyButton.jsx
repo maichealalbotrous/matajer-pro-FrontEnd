@@ -18,11 +18,9 @@ function MyButton({title , position}) {
        cursor-pointer
         hover:scale-110
     ">
-      {
-      position === "left"  ? <ArrowLeft className="w-5 h-5" strokeWidth={1.5}/> : <ArrowRight className=" w-5 h-5 "strokeWidth={1.5}/>
-     }
-      
+      {position === "left"  ? <ArrowLeft className="w-5 h-5" strokeWidth={1.5} /> : null}
       <span>{title}</span>
+      {position === "right"  ? <ArrowRight className="w-5 h-5" strokeWidth={1.5} /> : null}
     </button>
   );
 }
