@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ReceiptText, Calendar, Landmark, Wallet } from 'lucide-react';
+import MyButton from '@/components/MyButton/MyButton';
 
 function SettlementDetailModal({ isOpen, onClose, data }) {
   if (!data) return null;
@@ -38,9 +39,8 @@ function SettlementDetailModal({ isOpen, onClose, data }) {
           </div>
         </div>
 
-        <button onClick={onClose} className="w-full mt-8 py-4 bg-[#050b1a] text-white rounded-[20px] font-black text-sm shadow-xl hover:bg-black transition-all active:scale-95">
-          إغلاق النافذة
-        </button>
+        <MyButton title={ 'إغلاق النافذة' } onClick={onClose} className="w-full mt-8 py-4 bg-[#050b1a] text-white rounded-[20px] font-black text-sm shadow-xl hover:bg-black transition-all active:scale-95"/>
+        
       </DialogContent>
     </Dialog>
   );

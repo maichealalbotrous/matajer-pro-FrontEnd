@@ -3,6 +3,8 @@ import { Search, Download, Filter, Calendar } from 'lucide-react';
 import SettlementItemCard from '../SettlementItemCard/SettlementItemCard';
 import SettlementDetailModal from '../SettlementDetailModal/SettlementDetailModal';
 import SettlementStats from '../SettlementStats/SettlementStats';
+import MyInput from '@/components/MyInput/MyInput';
+import MyButton from '@/components/MyButton/MyButton';
 
 
 function Settlements() {
@@ -43,17 +45,24 @@ function Settlements() {
           <p className="text-slate-400 font-bold">عرض التقارير المالية لفرعك حسب الفترة الزمنية.</p>
         </div>
 
-        <div className="flex bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm">
+              <div className="flex bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm w-fit" dir="rtl">
           {['today', 'weekly', 'monthly', 'yearly'].map((p) => (
-            <button
+            <MyButton 
               key={p}
+              title={
+                p === 'today' ? 'اليوم' : 
+                p === 'weekly' ? 'الأسبوع' : 
+                p === 'monthly' ? 'الشهر' : 'السنة'
+              }
               onClick={() => handlePeriodChange(p)}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${
-                period === p ? 'bg-[#050b1a] text-white shadow-lg' : 'text-slate-400 hover:bg-slate-50'
-              }`}
-            >
-              {p === 'today' ? 'اليوم' : p === 'weekly' ? 'الأسبوع' : p === 'monthly' ? 'الشهر' : 'السنة'}
-            </button>
+              className={`
+                px-6 py-2.5 rounded-xl text-xs font-black
+                ${period === p 
+                  ? 'bg-[#050b1a] text-white shadow-lg' 
+                  : 'bg-transparent text-slate-400 hover:bg-slate-50'
+                }
+              `}
+            />
           ))}
         </div>
       </div>
@@ -63,14 +72,13 @@ function Settlements() {
       <SettlementStats statistics={apiData.statistics} />
 
       <div className="flex flex-col xl:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
-          <input 
-            type="text" 
-            placeholder="بحث برقم التسوية..." 
-            className="w-full pr-14 pl-6 py-5 bg-white rounded-[24px] border border-slate-100 shadow-sm focus:outline-none focus:ring-4 focus:ring-[#0f172a]/5 font-bold"
-          />
-        </div>
+        <div className="flex-1">
+        <MyInput
+          type="text" 
+          placeholder="بحث برقم التسوية..." 
+          Icon={<Search size={20} />} 
+        />
+      </div>
 
         <div className="flex items-center gap-3 bg-white p-2 rounded-[24px] border border-slate-100 shadow-sm">
          {/* the custom date range filter */}
@@ -84,15 +92,13 @@ function Settlements() {
              <span className="text-[10px] font-bold text-slate-400">إلى</span>
              <input type="date" className="text-xs font-bold outline-none border-none bg-transparent" />
            </div>
-           <button className="bg-[#050b1a] text-white p-3 rounded-xl hover:scale-105 transition-all">
-             <Filter size={18} />
-           </button>
+           <MyButton title={<Filter size={18} />} className="bg-[#050b1a] text-white p-3 rounded-xl hover:scale-105 transition-all"/>
+
+           
         </div>
 
-        <button className="flex items-center justify-center gap-3 bg-white px-8 py-5 rounded-[24px] border border-slate-100 font-black text-[#0f172a] hover:bg-slate-50 shadow-sm transition-all">
-          <Download size={18} />
-          <span>تصدير PDF</span>
-        </button>
+        <MyButton title={   <Download size={18} />} className="flex items-center justify-center gap-3 bg-white px-8 py-5 rounded-[24px] border border-slate-100 font-black text-[#0f172a] hover:bg-slate-50 shadow-sm transition-all"/>
+       
       </div>
 
 {/* the settlements list section */}

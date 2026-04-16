@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, Trash2, Eye } from 'lucide-react';
+import MyButton from '@/components/MyButton/MyButton';
 
 function SettlementItemCard({ settlementsData = [], onShow, onDelete }) {
   if (!settlementsData.length) return (
@@ -37,8 +38,8 @@ function SettlementItemCard({ settlementsData = [], onShow, onDelete }) {
               <span className="text-xl font-black text-[#0f172a] tracking-tight tabular-nums">{item.amount} ل.س</span>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => onShow(item)} className="p-2 text-slate-300 hover:text-[#0f172a] transition-colors"><Eye size={18} /></button>
-              <button onClick={() => onDelete(item.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+              <MyButton title={<Eye size={18} />} onClick={() => onShow(item)} className="p-2 text-slate-300 hover:text-[#0f172a] transition-colors"/>
+              <MyButton title={<Trash2 size={18} />} onClick={() => onDelete(item.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors"/>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import MyInput from "@/components/input/MyInput"
+import MyInput from "@/components/MyInput/MyInput"
 import MyButton from "@/components/MyButton/MyButton"
 import {
   Card,
