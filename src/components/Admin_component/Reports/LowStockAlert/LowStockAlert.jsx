@@ -16,8 +16,8 @@ function LowStockAlert({ items = [] }) {
                 <AlertTriangle size={18} />
               </div>
               <div>
-                <h4 className="text-sm font-black text-[#0f172a]">{item.variant_name}</h4>
-                <p className="text-[10px] text-slate-400 font-bold">{item.product_name} • {item.color} • {item.size}</p>
+                <h4 className="text-sm font-black text-[#0f172a]">{item.product_name}</h4>
+                <p className="text-[10px] text-slate-400 font-bold">{item.variant_name} • {item.color} • {item.size}</p>
               </div>
             </div>
             <div className="text-left flex flex-col items-end gap-1">

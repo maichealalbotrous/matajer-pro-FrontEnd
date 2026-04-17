@@ -12,8 +12,8 @@ function TopProfitCard({ data = [] }) {
                 <TrendingUp size={22} />
               </div>
               <div>
-                <h3 className="text-lg font-black text-[#0f172a]">{item.variant_name}</h3>
-                <p className="text-xs text-slate-400 font-bold">{item.product_name} • {item.color}</p>
+                <h3 className="text-lg font-black text-[#0f172a]">{item.product_name}</h3>
+                <p className="text-xs text-slate-400 font-bold">{item.variant_name} • {item.color}</p>
               </div>
             </div>
             <div className="text-left">
@@ -28,15 +28,15 @@ function TopProfitCard({ data = [] }) {
               <p className="text-[10px] font-black text-slate-400 flex items-center gap-1">
                 <BarChart3 size={12} /> أداء المبيعات حسب القياس
               </p>
-              <span className="text-[10px] font-black text-slate-400">الكمية المباعة: {item.total_sold}</span>
+              <span className="text-[10px] font-black text-slate-400"><span> الكمية المباعة :</span> <span className="text-green-600 ms-2">{item.total_sold}</span></span>
             </div>
             <div className="flex flex-wrap gap-2">
               {item.sizes_performance.map((size, sIdx) => (
                 <div key={sIdx} className="bg-slate-50 px-4 py-2 rounded-xl flex items-center gap-3 border border-transparent hover:border-slate-200 transition-all">
-                  <span className="text-xs font-black text-[#0f172a] uppercase">M {size.size}</span>
+                  <span className="text-xs font-black text-[#0f172a] uppercase"> {size.size}</span>
                   <div className="w-[1px] h-3 bg-slate-200" />
                   <span className="text-[11px] font-bold text-slate-500">{size.qty} مبيعات</span>
-                  <span className="text-[11px] font-black text-green-600">+{size.profit} ر.س</span>
+                  <span className="text-[11px] font-black text-green-600">+{size.profit} ل.س</span>
                 </div>
               ))}
             </div>

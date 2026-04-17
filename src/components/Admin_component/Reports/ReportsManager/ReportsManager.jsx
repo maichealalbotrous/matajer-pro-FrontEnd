@@ -1,27 +1,11 @@
 import React from 'react';
 
-import { PieChart, AlertCircle, Calendar } from 'lucide-react';
+import { PieChart, AlertCircle, Calendar, ArrowUpRight, TrendingUp, BarChart3, AlertTriangle } from 'lucide-react';
 import TopProfitCard from '../TopProfitCard/TopProfitCard';
 import LowStockAlert from '../LowStockAlert/LowStockAlert';
+import { topProfitableData, lowStockData } from './lib';
 
 function ReportsManager() {
-  // بيانات تجريبية من هيكلة الباك إند الخاص بك
-  const topProfitableData = [
-    {
-      product_name: "hodeis",
-      variant_name: "Hodei one",
-      color: "kh",
-      total_profit: 1780,
-      total_sold: 2,
-      sizes_performance: [{ size: "m", profit: 1780, qty: "2" }]
-    }
-  ];
-
-  const lowStockData = [
-    // مثال لبيانات المخزون المنخفض
-    // { product_name: "hodeis", variant_name: "Hodei one", color: "kh", size: "L", quantity: 1, status: "كمية منخفضة" }
-  ];
-
   return (
     <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-10" dir="rtl">
       {/* Header */}
@@ -36,7 +20,7 @@ function ReportsManager() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* قسم الأكثر ربحية - يأخذ مساحة أكبر */}
+        {/* topProfit */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <PieChart className="text-blue-500" size={20} />
@@ -45,7 +29,7 @@ function ReportsManager() {
           <TopProfitCard data={topProfitableData} />
         </div>
 
-        {/* قسم تنبيهات المخزون */}
+        {/* lowStock*/}
         <div className="space-y-6">
           <div className="flex items-center gap-2 mb-2">
             <AlertCircle className="text-red-500" size={20} />
@@ -53,12 +37,11 @@ function ReportsManager() {
           </div>
           <LowStockAlert items={lowStockData} />
           
-          {/* بطاقة إضافية سريعة */}
           <div className="bg-[#050b1a] p-8 rounded-[32px] text-white overflow-hidden relative">
             <div className="relative z-10">
               <h3 className="text-lg font-black mb-2">تحسين المبيعات</h3>
               <p className="text-slate-400 text-xs font-bold leading-relaxed">
-                بناءً على التقارير، مقاس M في موديل Hodei one هو الأكثر طلباً. ننصح بزيادة المخزون.
+                بناءً على التقارير، مقاس {topProfitableData[0]?.sizes_performance[0]?.size} في موديل {topProfitableData[0]?.variant_name} هو الأكثر طلباً. ننصح بزيادة المخزون.
               </p>
             </div>
             <ArrowUpRight className="absolute -bottom-4 -left-4 text-white/10 w-24 h-24" />
