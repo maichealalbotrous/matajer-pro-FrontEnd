@@ -2,18 +2,19 @@ import React, { useState } from 'react'
 import HeaderDashboard from '@/components/Admin_component/HeaderDashboard/HeaderDashboard'
 import SideBarDashboard from '@/components/Admin_component/SideBarDashboard/SideBarDashboard'
 import InformationCard from '@/components/Admin_component/InformationCard/InformationCard'
-import InvoicesCard from '@/components/Admin_component/InvoicesCard/InvoicesCard'
-import BranchesOverviewCard from '@/components/Admin_component/BranchesOverviewCard/BranchesOverviewCard'
-import EmployeesMiniCard from '@/components/Admin_component/EmployeesMiniCard/EmployeesMiniCard'
-import InventoryCard from '@/components/Admin_component/InventoryCard/InventoryCard'
+import InvoicesCard from '@/components/Admin_component/Invoices/InvoicesCard/InvoicesCard'
+import BranchesOverviewCard from '@/components/Branch_component/BranchesOverviewCard/BranchesOverviewCard'
+import EmployeesMiniCard from '@/components/Admin_component/Employee/EmployeesMiniCard/EmployeesMiniCard'
+import InventoryCard from '@/components/Admin_component/Inventory/InventoryCard/InventoryCard'
 
 //test data///////////////////////////////////////
-import { testEmployees } from '@/components/Admin_component/EmployeesMiniCard/lib';
-import {testInvoices} from '@/components/Admin_component/InvoicesCard/lib';
+import { testEmployees } from '@/components/Admin_component/Employee/EmployeesMiniCard/lib';
+import {testInvoices} from '@/components/Admin_component/Invoices/InvoicesCard/lib';
 import {testinformationData} from '@/components/Admin_component/InformationCard/lib';
-import ProductsStateCard from '@/components/Admin_component/ProductsStatCard/ProductsStatCard'
-import { testInventoryData } from '@/components/Admin_component/InventoryCard/lib.jsx';
-import { testProductsData } from '@/components/Admin_component/ProductsStatCard/lib'
+import ProductsStateCard from '@/components/Admin_component/Products/ProductsStatCard/ProductsStatCard'
+import { testInventoryData } from '@/components/Admin_component/Inventory/InventoryCard/lib.jsx';
+import { testProductsData } from '@/components/Admin_component/Products/ProductsStatCard/lib'
+import ExpensesCard from '@/components/Admin_component/Expenses/ExpensesCard/ExpensesCard'
 //test data///////////////////////////////////////
 
 function AdminDashboard() {
@@ -80,6 +81,12 @@ function AdminDashboard() {
                 <InventoryCard InventoryData={testInventoryData[0]} />
               </div>
 
+
+              {/*Expenses */}
+
+              <div className="md:col-span-4">
+                <ExpensesCard amount={128400} />
+              </div>
             </div>
             
           </div>

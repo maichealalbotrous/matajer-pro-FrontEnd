@@ -1,8 +1,9 @@
+import { Link } from 'react-router-dom';
 import { Package, Layers } from 'lucide-react';
 
-function ProductsStateCard({ProductsData}) {
+function ProductsStateCard({ ProductsData }) {
   return (
-    <div className="cursor-pointer bg-white rounded-[32px] p-8 shadow-sm border border-slate-50" dir="rtl">
+    <Link to="/products" className="block bg-white rounded-[32px] p-8 shadow-sm border border-slate-50 hover:shadow-md transition-all" dir="rtl">
       <div className="flex justify-between items-start mb-6">
         <div className="flex flex-col">
           <h3 className="text-lg font-black text-[#0f172a]">{ProductsData.title}</h3>
@@ -18,7 +19,7 @@ function ProductsStateCard({ProductsData}) {
         <span className="text-4xl font-black text-[#0f172a] tracking-tighter">{ProductsData.count}</span>
         <span className="text-[10px] font-bold text-slate-400 mt-1">إجمالي القطع المخزنة</span>
       </div>
-    </div>
+    </Link>
   );
 }
 export default ProductsStateCard;

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { LayoutGrid, ShoppingBag, Package, BarChart3, Settings, Plus, BookOpen } from 'lucide-react';
 
 function SideBarDashboard({ isOpen, setIsOpen }) {
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [IsActive, SetIsActive] = useState('Dashboard');
 
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
-    { name: 'Sales', icon: ShoppingBag, label: 'المبيعات' },
+    { name: 'AdminDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
+    { name: 'Settlements', icon: ShoppingBag, label: 'المبيعات' },
     { name: 'Inventory', icon: Package, label: 'المخزون' },
     { name: 'Reports', icon: BarChart3, label: 'التقارير' },
     { name: 'Settings', icon: Settings, label: 'الإعدادات' },
@@ -39,22 +40,18 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
 
         <nav className="flex-1 px-6 space-y-2 mt-4">
           {menuItems.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => setActiveTab(item.name)}
-              className={`cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
-                ${activeTab === item.name 
-                  ? 'bg-slate-50 text-[#0f172a]' 
-                  : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'
-                }`}
-            >
-              <span className={`text-sm font-bold ${activeTab === item.name ? 'font-black' : ''}`}>
-                {item.label}
-              </span>
-              <item.icon className={`w-5 h-5 transition-colors ${
-                activeTab === item.name ? 'text-[#0f172a]' : 'text-slate-300 group-hover:text-slate-500'
-              }`} />
-            </button>
+        <NavLink
+      key={item.name}
+      to={`/${item.name}`} 
+      className={({ IsActive }) => `
+        cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
+        ${IsActive ? 'bg-slate-50 text-[#0f172a]' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
+      `}
+    >
+      {/* نفس المحتوى الداخلي للزر */}
+      <span className="text-sm font-bold">{item.label}</span>
+      <item.icon className="w-5 h-5" />
+    </NavLink>
           ))}
         </nav>
 
