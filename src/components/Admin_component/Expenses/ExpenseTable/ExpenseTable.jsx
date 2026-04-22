@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2, FileText, Calendar } from 'lucide-react';
+import { Trash2, Edit3, FileText, Calendar } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -9,14 +9,13 @@ import {
   TableRow,
 } from "@/components/ui/table"; 
 
-const ExpenseTable = ({ data, onDelete, loading }) => {
+const ExpenseTable = ({ data, onDelete, onEdit, loading }) => {
 
   if (loading) return (
     <div className="p-20 text-center font-black text-slate-400 animate-pulse">
       جاري تحميل البيانات...
     </div>
   );
-
 
 
   return (
@@ -44,7 +43,7 @@ const ExpenseTable = ({ data, onDelete, loading }) => {
                   </div>
                 </TableCell>
                 <TableCell className="px-8 py-5 font-black text-[#0f172a]">
-                  {expense.amount} <span className="text-[10px] text-slate-400 mr-1">ر.س</span>
+                  {expense.amount} <span className="text-[10px] text-slate-400 mr-1">ل.س</span>
                 </TableCell>
                 <TableCell className="px-8 py-5 text-slate-400 font-bold max-w-xs truncate">
                   {expense.notes || "—"}
@@ -56,14 +55,22 @@ const ExpenseTable = ({ data, onDelete, loading }) => {
                   </div>
                 </TableCell>
                 <TableCell className="px-8 py-5">
-                  <div className="flex justify-center">
-                    <button 
-                      onClick={() => onDelete(expense.id)} 
-                      className="p-2 text-red-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                 <div className="flex justify-center gap-2">
+
+              <button 
+                onClick={() => onEdit(expense)} 
+                className="p-2 text-blue-400 hover:bg-blue-50 rounded-xl transition-colors cursor-pointer"
+              >
+                <Edit3 size={18} />
+              </button>
+
+              <button 
+                onClick={() => onDelete(expense.id)} 
+                className="p-2 text-red-400 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+              >
+      <Trash2 size={18} />
+    </button>
+  </div>
                 </TableCell>
               </TableRow>
             ))
