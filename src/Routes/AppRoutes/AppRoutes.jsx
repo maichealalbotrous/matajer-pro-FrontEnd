@@ -10,6 +10,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import Employee_page from "@/pages/ِAdmin/Employee/Employee_page";
 import Expenses_page from "@/pages/ِAdmin/Expenses_page/Expenses_page";
+import DiscountsManager from "@/components/Admin_component/Discounts/DiscountsManager/DiscountsManager";
 
 export default function AppRoutes() {
   return (
@@ -107,6 +108,20 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+
+       <Route
+        path="/Discounts"
+        element={
+          <ProtectedRoute>
+            <>
+              <DiscountsManager />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+
       <Route path="/" element={<Navigate to="/AdminDashboard" />} />
       <Route path="*" element={<div>404 - الصفحة غير موجودة</div>} />
     </Routes>

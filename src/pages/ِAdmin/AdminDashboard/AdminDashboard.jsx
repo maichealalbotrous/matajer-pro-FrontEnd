@@ -15,6 +15,7 @@ import ProductsStateCard from '@/components/Admin_component/Products/ProductsSta
 import { testInventoryData } from '@/components/Admin_component/Inventory/InventoryCard/lib.jsx';
 import { testProductsData } from '@/components/Admin_component/Products/ProductsStatCard/lib'
 import ExpensesCard from '@/components/Admin_component/Expenses/ExpensesCard/ExpensesCard'
+import DiscountsStatsCard from '@/components/Admin_component/Discounts/DiscountsStatsCard/DiscountsStatsCard'
 //test data///////////////////////////////////////
 
 function AdminDashboard() {
@@ -86,6 +87,12 @@ function AdminDashboard() {
 
               <div className="md:col-span-4">
                 <ExpensesCard amount={128400} />
+              </div>
+
+
+              
+              <div className="md:col-span-4 float-start">
+                <DiscountsStatsCard amount={128400} />
               </div>
             </div>
             
