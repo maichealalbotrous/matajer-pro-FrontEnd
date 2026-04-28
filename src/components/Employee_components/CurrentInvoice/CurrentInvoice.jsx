@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FileText } from 'lucide-react';
-import InvoiceItem from '../InvoiceItem/InvoiceItem';
-import InvoiceSummary from '../InvoiceSummary/InvoiceSummary';
+import InvoiceItem from '../Invoices/InvoiceItem/InvoiceItem';
+import InvoiceSummary from '../Invoices/InvoiceSummary/InvoiceSummary';
 
 
 const CurrentInvoice = ({ cartItems, setCartItems }) => {

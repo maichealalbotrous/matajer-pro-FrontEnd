@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu } from 'lucide-react';
-import NewInvoiceCard from '../NewInvoiceCard/NewInvoiceCard';
+import NewInvoiceCard from '../Invoices/NewInvoiceCard/NewInvoiceCard';
 import EmployeeSideBar from '../EmployeeSideBar/EmployeeSideBar';
 import MyButton from '@/components/MyButton/MyButton';
 
