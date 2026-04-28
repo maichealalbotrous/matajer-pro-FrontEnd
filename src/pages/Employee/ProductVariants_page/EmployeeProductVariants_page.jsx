@@ -1,4 +1,4 @@
-import ProductVariants from '@/components/Employee_components/ProductVariants/ProductVariants'
+import ProductVariants from '@/components/Employee_components/Products/ProductVariants/ProductVariants'
 import React from 'react'
 
 function EmployeeProductVariants_page({addToInvoice}) {
