@@ -1,4 +1,4 @@
-import ProductsManager from '@/components/Employee_components/ProductsManager/ProductsManager'
+import ProductsManager from '@/components/Employee_components/Products/ProductsManager/ProductsManager';
 import React from 'react'
 
 function EmployeeProducts_page() {

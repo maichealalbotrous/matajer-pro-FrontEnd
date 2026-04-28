@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FileText } from 'lucide-react';
-import InvoiceItem from '../Invoices/InvoiceItem/InvoiceItem';
-import InvoiceSummary from '../Invoices/InvoiceSummary/InvoiceSummary';
+import InvoiceItem from '../InvoiceItem/InvoiceItem';
+import InvoiceSummary from '../InvoiceSummary/InvoiceSummary';
+
 
 
 const CurrentInvoice = ({ cartItems, setCartItems }) => {
@@ -45,7 +46,6 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
           )}
         </div>
 
-        {/* اليسرى: الملخص */}
         <div className="lg:col-span-4">
           <InvoiceSummary 
             invoiceType={invoiceType}
