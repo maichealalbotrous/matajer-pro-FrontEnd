@@ -1,128 +1,78 @@
-import ProductVariantsPage from "@/components/Admin_component/Products/ProductVariantsPage/ProductVariantsPage";
+import React, { useState } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+
 import Auth_page from "@/pages/Auth/Auth_page";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import AdminDashboard from "@/pages/ِAdmin/AdminDashboard/AdminDashboard";
 import Inventory_page from "@/pages/ِAdmin/Inventory/Inventory_page";
 import Invoices_page from "@/pages/ِAdmin/Invoices/Invoices_page";
 import Products_page from "@/pages/ِAdmin/Products/Products_page";
+import ProductVariantsPage from "@/components/Admin_component/Products/ProductVariantsPage/ProductVariantsPage";
 import Reports from "@/pages/ِAdmin/Reports/Reports";
-import Settlements_page from "@/pages/ِAdmin/Settlements/Settlements_page";
-import { Navigate, Route, Routes } from "react-router-dom";
-import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
 import Employee_page from "@/pages/ِAdmin/Employee/Employee_page";
 import Expenses_page from "@/pages/ِAdmin/Expenses_page/Expenses_page";
+import Settlements_page from "@/pages/ِAdmin/Settlements/Settlements_page";
 import DiscountsManager from "@/components/Admin_component/Discounts/DiscountsManager/DiscountsManager";
+import EmployeeDashboard_page from "@/pages/Employee/EmployeeDashboard_page/EmployeeDashboard_page";
+import CurrentInvoice_page from "@/pages/Employee/CurrentInvoice_page/CurrentInvoice_page";
+import EmployeeProducts_page from "@/pages/Employee/Products_page/Products_page";
+import EmployeeProductVariants_page from "@/pages/Employee/ProductVariants_page/EmployeeProductVariants_page";
+
 
 export default function AppRoutes() {
+  const [cartItems, setCartItems] = useState([]);
+
+  const addToInvoice = (item) => {
+    setCartItems((prev) => [...prev, item]);
+  };
+
   return (
     <Routes>
       <Route path="/Auth" element={<Auth_page />} />
-      <Route
-        path="/AdminDashboard"
-        element={
-          <ProtectedRoute>
-            <>
-              <AdminDashboard />
-              </>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/Inventory"
-        element={
-          <ProtectedRoute>
-            <>
-              <Inventory_page />
-              </>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/Invoices"
-        element={
-          <ProtectedRoute>
-            <>
-              <Invoices_page />
-            </>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/Settlements"
-        element={
-          <ProtectedRoute>
-            <>
-              <Settlements_page />
-            </>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/products"
-        element={
-          <ProtectedRoute>
-            <>
-              <Products_page />
-            </>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/products/:product_id/variants"
-        element={
-          <ProtectedRoute>
-            <>
-              <ProductVariantsPage />
-            </>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/Reports"
-        element={
-          <ProtectedRoute>
-            <>
-              <Reports />
-            </>
-          </ProtectedRoute>
-        }
+
+      {/* --- (Admin Routes) --- */}
+      <Route path="/AdminDashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/Inventory" element={<ProtectedRoute><Inventory_page /></ProtectedRoute>} />
+      <Route path="/Invoices" element={<ProtectedRoute><Invoices_page /></ProtectedRoute>} />
+      <Route path="/Settlements" element={<ProtectedRoute><Settlements_page /></ProtectedRoute>} />
+      <Route path="/products" element={<ProtectedRoute><Products_page /></ProtectedRoute>} />
+      <Route path="/products/:product_id/variants" element={<ProtectedRoute><ProductVariantsPage /></ProtectedRoute>} />
+      <Route path="/Reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/Employees" element={<ProtectedRoute><Employee_page /></ProtectedRoute>} />
+      <Route path="/Expenses" element={<ProtectedRoute><Expenses_page /></ProtectedRoute>} />
+      <Route path="/Discounts" element={<ProtectedRoute><DiscountsManager /></ProtectedRoute>} />
+
+      {/* --- (Employee Flow Routes) --- */}
+      
+      <Route 
+        path="/EmployeeDashboard" 
+        element={<ProtectedRoute><EmployeeDashboard_page /></ProtectedRoute>} 
       />
 
-       <Route
-        path="/Employees"
-        element={
-          <ProtectedRoute>
-            <>
-              <Employee_page />
-            </>
-          </ProtectedRoute>
-        }
+      <Route 
+        path="/EmployeeProducts" 
+        element={<ProtectedRoute><EmployeeProducts_page /></ProtectedRoute>} 
       />
 
-       <Route
-        path="/Expenses"
+      <Route 
+        path="/EmployeeProducts/:productId/variants" 
         element={
           <ProtectedRoute>
-            <>
-              <Expenses_page />
-            </>
+            <EmployeeProductVariants_page addToInvoice={addToInvoice} />
           </ProtectedRoute>
-        }
+        } 
       />
 
-
-       <Route
-        path="/Discounts"
+      <Route 
+        path="/CurrentInvoice" 
         element={
           <ProtectedRoute>
-            <>
-              <DiscountsManager />
-            </>
+            <CurrentInvoice_page cartItems={cartItems} setCartItems={setCartItems} />
           </ProtectedRoute>
-        }
+        } 
       />
 
-
-      <Route path="/" element={<Navigate to="/AdminDashboard" />} />
+      <Route path="/" element={<Navigate to="/Auth" />} />
       <Route path="*" element={<div>404 - الصفحة غير موجودة</div>} />
     </Routes>
   );
