@@ -21,6 +21,7 @@ import {ProgramerLayout} from '../../Layout/ProgramerSideBar/ProgramerLayout'
 import ProgramerDashboard_page from "@/pages/Programer/ProgramerDashboard_page/ProgramerDashboard_page";
 import Branches_page from "@/pages/Programer/Branches/Branches_page";
 import Payments_page from "@/pages/Programer/payments/Payments_page";
+import SubKey_Page from "@/pages/Programer/KeySub/SubKey_Page";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -113,6 +114,18 @@ export default function AppRoutes() {
   } 
 />
 
+
+{/*SubscriptionKeys */}
+<Route 
+  path="/subscriptions" 
+  element={
+    <ProtectedRoute>
+      <ProgramerLayout>
+        <SubKey_Page />
+      </ProgramerLayout>
+    </ProtectedRoute>
+  } 
+/>
 
       <Route path="/" element={<Navigate to="/Auth" />} />
       <Route path="*" element={<div>404 - الصفحة غير موجودة</div>} />
