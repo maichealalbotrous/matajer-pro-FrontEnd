@@ -12,8 +12,8 @@ import {
 
 function ProgrammerSidebar({ isOpen, setIsOpen }) {
   const menuItems = [
-    { name: 'AdminDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
-    { name: 'branches', icon: MapPin, label: 'الفروع' },
+    { name: 'ProgramerDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
+    { name: 'ProgramerBranches', icon: MapPin, label: 'الفروع' },
     { name: 'payments', icon: CreditCard, label: 'المدفوعات والمالية' },
     { name: 'subscriptions', icon: Key, label: 'مفاتيح الاشتراك' },
     { name: 'configs', icon: Settings, label: 'إعدادات النظام العامة' },
