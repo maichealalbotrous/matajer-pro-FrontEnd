@@ -17,7 +17,9 @@ import EmployeeDashboard_page from "@/pages/Employee/EmployeeDashboard_page/Empl
 import CurrentInvoice_page from "@/pages/Employee/CurrentInvoice_page/CurrentInvoice_page";
 import EmployeeProducts_page from "@/pages/Employee/Products_page/Products_page";
 import EmployeeProductVariants_page from "@/pages/Employee/ProductVariants_page/EmployeeProductVariants_page";
-
+import {ProgramerLayout} from '../../Layout/ProgramerSideBar/ProgramerLayout'
+import ProgramerDashboard_page from "@/pages/Programer/ProgramerDashboard_page/ProgramerDashboard_page";
+import Branches_page from "@/pages/Programer/Branches/Branches_page";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -72,6 +74,31 @@ export default function AppRoutes() {
         } 
       />
 
+      {/*Programer Routes */}
+
+      {/*programer Dashboard */}
+
+<Route 
+  path="/ProgramerDashboard" 
+  element={
+    <ProtectedRoute>
+      <ProgramerLayout>
+        <ProgramerDashboard_page />
+      </ProgramerLayout>
+    </ProtectedRoute>
+  } 
+/>
+{/*programer branches */}
+<Route 
+  path="/ProgramerBranches" 
+  element={
+    <ProtectedRoute>
+      <ProgramerLayout>
+        <Branches_page />
+      </ProgramerLayout>
+    </ProtectedRoute>
+  } 
+/>
       <Route path="/" element={<Navigate to="/Auth" />} />
       <Route path="*" element={<div>404 - الصفحة غير موجودة</div>} />
     </Routes>
