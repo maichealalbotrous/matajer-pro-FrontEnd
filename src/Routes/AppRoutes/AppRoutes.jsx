@@ -20,6 +20,7 @@ import EmployeeProductVariants_page from "@/pages/Employee/ProductVariants_page/
 import {ProgramerLayout} from '../../Layout/ProgramerSideBar/ProgramerLayout'
 import ProgramerDashboard_page from "@/pages/Programer/ProgramerDashboard_page/ProgramerDashboard_page";
 import Branches_page from "@/pages/Programer/Branches/Branches_page";
+import Payments_page from "@/pages/Programer/payments/Payments_page";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -99,6 +100,20 @@ export default function AppRoutes() {
     </ProtectedRoute>
   } 
 />
+
+{/*payments programer */}
+<Route 
+  path="/payments" 
+  element={
+    <ProtectedRoute>
+      <ProgramerLayout>
+        <Payments_page />
+      </ProgramerLayout>
+    </ProtectedRoute>
+  } 
+/>
+
+
       <Route path="/" element={<Navigate to="/Auth" />} />
       <Route path="*" element={<div>404 - الصفحة غير موجودة</div>} />
     </Routes>
