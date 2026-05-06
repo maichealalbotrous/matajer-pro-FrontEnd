@@ -27,88 +27,83 @@ function Settlements() {
     ]
   });
 
-  {/* handle period change */}
-  const handlePeriodChange = (newPeriod) => {
-    setPeriod(newPeriod);
-  };
+
 
   {/*////////////////////////////////////////////////////////////////////////////////////////// */}
   {/*////////////////////////////////////////////////////////////////////////////////////////// */}
 
 
   return (
-    <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-8" dir="rtl">
-        {/* the main content */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+   <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-6" dir="rtl">
+      
+      {/*title and period filters*/}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black text-[#0f172a] mb-2">تسويات الفرع</h1>
-          <p className="text-slate-400 font-bold">عرض التقارير المالية لفرعك حسب الفترة الزمنية.</p>
+          <h1 className="text-2xl md:text-3xl font-black text-[#0f172a] mb-1">تسويات الفرع</h1>
+          <p className="text-sm md:text-base text-slate-400 font-bold">عرض التقارير المالية لفرعك حسب الفترة الزمنية.</p>
         </div>
 
-              <div className="flex bg-white p-1.5 rounded-2xl border border-slate-100 shadow-sm w-fit" dir="rtl">
+        <div className="flex bg-white p-1 rounded-2xl border border-slate-100 shadow-sm w-full md:w-fit overflow-x-auto">
           {['today', 'weekly', 'monthly', 'yearly'].map((p) => (
-            <MyButton 
+            <button 
               key={p}
-              title={
-                p === 'today' ? 'اليوم' : 
-                p === 'weekly' ? 'الأسبوع' : 
-                p === 'monthly' ? 'الشهر' : 'السنة'
-              }
-              onClick={() => handlePeriodChange(p)}
-              className={`
-                px-6 py-2.5 rounded-xl text-xs font-black
+              onClick={() => setPeriod(p)}
+              className={`flex-1 md:flex-none px-4 py-2 rounded-full font-bold text-xs md:text-sm transition-all duration-300 whitespace-nowrap
                 ${period === p 
-                  ? 'bg-[#050b1a] text-white shadow-lg' 
-                  : 'bg-transparent text-slate-400 hover:bg-slate-50'
-                }
-              `}
-            />
+                  ? 'bg-black text-white shadow-md' 
+                  : 'text-slate-600 hover:bg-slate-50'
+                }`}
+            >
+              {p === 'today' ? 'اليوم' : p === 'weekly' ? 'الأسبوع' : p === 'monthly' ? 'الشهر' : 'السنة'}
+            </button>
           ))}
         </div>
       </div>
 
-
-{/* the main statistics section */}
       <SettlementStats statistics={apiData.statistics} />
 
-      <div className="flex flex-col xl:flex-row gap-4">
-        <div className="flex-1">
-        <MyInput
-          type="text" 
-          placeholder="بحث برقم التسوية..." 
-          Icon={<Search size={20} />} 
-        />
-      </div>
-
-        <div className="flex items-center gap-3 bg-white p-2 rounded-[24px] border border-slate-100 shadow-sm">
-         {/* the custom date range filter */}
-           <div className="flex items-center gap-2 px-3">
-             <span className="text-[10px] font-bold text-slate-400">من</span>
-             <input type="date" className="text-xs font-bold outline-none border-none bg-transparent" />
-           </div>
-           <div className="w-[1px] h-8 bg-slate-100"></div>
-          {/* the custom date range filter */}
-           <div className="flex items-center gap-2 px-3">
-             <span className="text-[10px] font-bold text-slate-400">إلى</span>
-             <input type="date" className="text-xs font-bold outline-none border-none bg-transparent" />
-           </div>
-           <MyButton title={<Filter size={18} />} className="bg-[#050b1a] text-white p-3 rounded-xl hover:scale-105 transition-all"/>
-
-           
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+        
+        {/* search input*/}
+        <div className="lg:col-span-5">
+          <MyInput
+            type="text" 
+            placeholder="بحث برقم التسوية..." 
+            Icon={<Search size={18} />} 
+          />
         </div>
 
-        <MyButton title={   <Download size={18} />} className="flex items-center justify-center gap-3 bg-white px-8 py-5 rounded-[24px] border border-slate-100 font-black text-[#0f172a] hover:bg-slate-50 shadow-sm transition-all"/>
-       
+        {/*date fillter*/}
+        <div className="lg:col-span-5 flex flex-col sm:flex-row gap-2 bg-white p-2 rounded-[24px] border border-slate-100 shadow-sm">
+           <div className="flex-1 flex items-center gap-2 px-3">
+             <span className="text-[10px] font-bold text-slate-400">من</span>
+             <input type="date" className="w-full text-xs font-bold outline-none bg-transparent" />
+           </div>
+           <div className="hidden sm:block w-[1px] bg-slate-100"></div>
+           <div className="flex-1 flex items-center gap-2 px-3">
+             <span className="text-[10px] font-bold text-slate-400">إلى</span>
+             <input type="date" className="w-full text-xs font-bold outline-none bg-transparent" />
+           </div>
+           <button className="bg-[#050b1a] text-white p-3 rounded-xl hover:bg-slate-800 transition-colors">
+             <Filter size={18} />
+           </button>
+        </div>
+
+        {/*export button*/}
+        <div className="lg:col-span-2">
+            <MyButton 
+                title={<Download size={18} />} 
+                className="w-full flex items-center justify-center gap-2 bg-black text-white py-4 rounded-[24px] hover:bg-slate-800 transition-all"
+            />
+        </div>
       </div>
 
-{/* the settlements list section */}
       <SettlementItemCard 
         settlementsData={apiData.data} 
         onShow={(item) => { setSelectedData(item); setIsModalOpen(true); }} 
         onDelete={(id) => console.log("حذف", id)} 
       />
 
-{/* the settlement detail modal */}
       <SettlementDetailModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

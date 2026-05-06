@@ -17,7 +17,6 @@ function HeaderDashboard({ Data = { name: "أحمد محمد", role: "مدير �
         </div>
 
         <div className="flex items-center gap-6">
-
           <button className="relative p-2.5 bg-slate-50 text-slate-400 hover:text-[#0f172a] rounded-full transition-all group">
             <Bell size={22} />
             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
@@ -36,7 +35,6 @@ function HeaderDashboard({ Data = { name: "أحمد محمد", role: "مدير �
              </div>
           </div>
         </div>
-
       </div>
     </header>
   )
