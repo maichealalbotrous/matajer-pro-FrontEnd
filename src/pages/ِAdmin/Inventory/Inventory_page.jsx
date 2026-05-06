@@ -1,10 +1,14 @@
-import InventoryManager from '@/components/Admin_component/Inventory/InventoryManager/InventoryManager'
-import React from 'react'
+import InventoryManager from "@/components/Admin_component/Inventory/InventoryManager/InventoryManager";
 
-function Inventory_page() {
+function Inventory_page({ isMenuOpen, setIsMenuOpen }) {
   return (
-    <div><InventoryManager/></div>
-  )
+
+    
+    <div>
+      
+      <InventoryManager isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+    </div>
+  );
 }
 
-export default Inventory_page
+export default Inventory_page;

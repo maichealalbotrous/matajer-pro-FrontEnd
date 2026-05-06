@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutGrid, ShoppingBag, Package, BarChart3, Settings, Plus, BookOpen } from 'lucide-react';
+import { LayoutGrid, ShoppingBag, Package, BarChart3, Settings, Plus, BookOpen, X } from 'lucide-react';
 
 function SideBarDashboard({ isOpen, setIsOpen }) {
   const [IsActive, SetIsActive] = useState('Dashboard');
@@ -23,6 +23,8 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
         />
       )}
 
+
+
       <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'} md:relative md:flex`} dir="rtl">
         
@@ -39,20 +41,19 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
 
 
         <nav className="flex-1 px-6 space-y-2 mt-4">
-          {menuItems.map((item) => (
-        <NavLink
-      key={item.name}
-      to={`/${item.name}`} 
-      className={({ IsActive }) => `
-        cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
-        ${IsActive ? 'bg-slate-50 text-[#0f172a]' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
-      `}
-    >
-      {/* نفس المحتوى الداخلي للزر */}
-      <span className="text-sm font-bold">{item.label}</span>
-      <item.icon className="w-5 h-5" />
-    </NavLink>
-          ))}
+      {menuItems.map((item) => (
+  <NavLink
+    key={item.name}
+    to={`/${item.name}`} 
+    className={({ isActive }) => `
+      cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
+      ${isActive ? 'bg-slate-50 text-[#0f172a] shadow-sm' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
+    `}
+  >
+    <span className="text-sm font-bold">{item.label}</span>
+    <item.icon className="w-5 h-5" />
+  </NavLink>
+))}
         </nav>
 
 

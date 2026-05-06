@@ -45,6 +45,7 @@ function InventoryManager({ inventoryData = testinventoryData }) {
 
   return (
     <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-10" dir="rtl">
+      
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-black text-[#0f172a]">جرد المخزون التفصيلي</h1>
       </div>

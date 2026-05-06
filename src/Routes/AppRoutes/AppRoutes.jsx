@@ -22,6 +22,7 @@ import ProgramerDashboard_page from "@/pages/Programer/ProgramerDashboard_page/P
 import Branches_page from "@/pages/Programer/Branches/Branches_page";
 import Payments_page from "@/pages/Programer/payments/Payments_page";
 import SubKey_Page from "@/pages/Programer/KeySub/SubKey_Page";
+import {AdminLayout} from "@/Layout/AdminSideBar/AdminLayout";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -35,16 +36,16 @@ export default function AppRoutes() {
       <Route path="/Auth" element={<Auth_page />} />
 
       {/* --- (Admin Routes) --- */}
-      <Route path="/AdminDashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-      <Route path="/Inventory" element={<ProtectedRoute><Inventory_page /></ProtectedRoute>} />
-      <Route path="/Invoices" element={<ProtectedRoute><Invoices_page /></ProtectedRoute>} />
-      <Route path="/Settlements" element={<ProtectedRoute><Settlements_page /></ProtectedRoute>} />
-      <Route path="/products" element={<ProtectedRoute><Products_page /></ProtectedRoute>} />
-      <Route path="/products/:product_id/variants" element={<ProtectedRoute><ProductVariantsPage /></ProtectedRoute>} />
-      <Route path="/Reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-      <Route path="/Employees" element={<ProtectedRoute><Employee_page /></ProtectedRoute>} />
-      <Route path="/Expenses" element={<ProtectedRoute><Expenses_page /></ProtectedRoute>} />
-      <Route path="/Discounts" element={<ProtectedRoute><DiscountsManager /></ProtectedRoute>} />
+      <Route path="/AdminDashboard" element={<ProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Inventory" element={<ProtectedRoute><AdminLayout><Inventory_page /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Invoices" element={<ProtectedRoute><AdminLayout><Invoices_page /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Settlements" element={<ProtectedRoute><AdminLayout><Settlements_page /></AdminLayout></ProtectedRoute>} />
+      <Route path="/products" element={<ProtectedRoute><AdminLayout><Products_page /></AdminLayout></ProtectedRoute>} />
+      <Route path="/products/:product_id/variants" element={<ProtectedRoute><AdminLayout><ProductVariantsPage /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Reports" element={<ProtectedRoute><AdminLayout><Reports /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Employees" element={<ProtectedRoute><AdminLayout><Employee_page /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Expenses" element={<ProtectedRoute><AdminLayout><Expenses_page /></AdminLayout></ProtectedRoute>} />
+      <Route path="/Discounts" element={<ProtectedRoute><AdminLayout><DiscountsManager /></AdminLayout></ProtectedRoute>} />
 
       {/* --- (Employee Flow Routes) --- */}
       

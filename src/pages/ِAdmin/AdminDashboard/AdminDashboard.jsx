@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import HeaderDashboard from '@/components/Admin_component/HeaderDashboard/HeaderDashboard'
 import SideBarDashboard from '@/components/Admin_component/SideBarDashboard/SideBarDashboard'
 import InformationCard from '@/components/Admin_component/InformationCard/InformationCard'
@@ -19,22 +18,13 @@ import DiscountsStatsCard from '@/components/Admin_component/Discounts/Discounts
 //test data///////////////////////////////////////
 
 function AdminDashboard() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-[#f8fafc] overflow-hidden" dir="rtl">
       
-      {/* SideBarDashboard*/}
-      <SideBarDashboard isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
 
       <div className="flex-1 flex flex-col min-w-0">
         
-              {/* HeaderDashboard*/}
-
-        <HeaderDashboard 
-          onMenuClick={() => setIsMenuOpen(!isMenuOpen)} 
-          isOpen={isMenuOpen}
-        />
 
         <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 transition-all duration-300">
           <div className="max-w-7xl mx-auto space-y-10">
