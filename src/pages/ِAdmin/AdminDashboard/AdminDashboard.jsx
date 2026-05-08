@@ -20,7 +20,7 @@ import DiscountsStatsCard from '@/components/Admin_component/Discounts/Discounts
 function AdminDashboard() {
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] overflow-hidden" dir="rtl">
+    <div className="flex h-screen bg-[#f8fafc]  overflow-hidden" dir="rtl">
       
 
       <div className="flex-1 flex flex-col min-w-0">

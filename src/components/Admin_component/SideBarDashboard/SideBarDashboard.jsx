@@ -10,7 +10,6 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
     { name: 'Settlements', icon: ShoppingBag, label: 'المبيعات' },
     { name: 'Inventory', icon: Package, label: 'المخزون' },
     { name: 'Reports', icon: BarChart3, label: 'التقارير' },
-    { name: 'Settings', icon: Settings, label: 'الإعدادات' },
   ];
 
   return (
@@ -57,12 +56,7 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
         </nav>
 
 
-        <div className="p-8 mt-auto">
-          <button className="w-full bg-[#050b1a] text-white flex items-center justify-center gap-3 py-4 rounded-full shadow-2xl shadow-black/20 hover:bg-black transition-all active:scale-95 group">
-             <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-             <span className="text-sm font-black tracking-wide">بيع سريع</span>
-          </button>
-        </div>
+      
       </aside>
     </>
   );
