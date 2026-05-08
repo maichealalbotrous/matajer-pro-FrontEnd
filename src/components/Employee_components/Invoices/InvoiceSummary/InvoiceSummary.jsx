@@ -12,17 +12,20 @@ const InvoiceSummary = ({
   totalAmount, 
   onSubmit 
 }) => {
+
+  const types = [
+    { id: 'sale', label: 'بيع', icon: CreditCard },
+    { id: 'return', label: 'مرتجع', icon: RefreshCw },
+    { id: 'exchange', label: 'تبديل', icon: ArrowLeftRight },
+  ];
+
   return (
     <div className="bg-[#050b1a] rounded-[40px] p-8 shadow-2xl text-white sticky top-8">
       <h2 className="text-xl font-black mb-6">إتمام العملية</h2>
       
       {/* Selector */}
       <div className="flex gap-2 mb-8 bg-white/5 p-2 rounded-2xl">
-        {[
-          { id: 'sale', label: 'بيع', icon: CreditCard },
-          { id: 'return', label: 'مرتجع', icon: RefreshCw },
-          { id: 'exchange', label: 'استبدال', icon: ArrowLeftRight },
-        ].map((type) => (
+        {types.map((type) => (
           <button 
             key={type.id}
             onClick={() => setInvoiceType(type.id)}

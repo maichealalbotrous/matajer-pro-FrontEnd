@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronRight, Info } from 'lucide-react';
+import { CheckCircle2, CheckCircle2Icon, ChevronRight, Info } from 'lucide-react';
 import MyInput from '@/components/MyInput/MyInput';
 import MyButton from '@/components/MyButton/MyButton';
+import { Alert, AlertAction, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 const ProductVariants = ({ addToInvoice }) => {
   const { productId } = useParams(); 
   const navigate = useNavigate();
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   
   const variants = [
     { Product_id: 1, id: 10, color: 'أسود مطفي', size: '256GB', price: 4500 },
@@ -25,8 +28,7 @@ const ProductVariants = ({ addToInvoice }) => {
 
   const handleConfirmAddition = () => {
     if (!selectedVariant || !saleDetails.sold_at_price) {
-      alert("يرجى اختيار الموديل وتحديد سعر البيع");
-      return;
+      alert('يرجى اختيار موديل وتحديد سعر البيع الفعلي قبل الإضافة للفاتورة.');
     }
 
     const newItem = {
@@ -38,12 +40,59 @@ const ProductVariants = ({ addToInvoice }) => {
     };
 
     addToInvoice(newItem); 
-    alert("تمت الإضافة للفاتورة بنجاح");
-    navigate('/CurrentInvoice');
+    setSaleDetails({
+      quantity: 1,
+      sold_at_price: '',
+      item_notes: ''
+    });
+    setShowSuccessAlert(true);
+    setTimeout(() => setShowSuccessAlert(false), 5000);
   };
 
   return (
-    <div className="p-10 bg-[#fcfcfc] min-h-screen" dir="rtl">
+
+      <div className="p-10 bg-[#fcfcfc] min-h-screen" dir="rtl">
+
+
+        {/**Alert section  */}
+
+        {showSuccessAlert && (
+        <div className="fixed bottom-8 left-8 z-50 animate-in fade-in slide-in-from-bottom-4">
+          <Alert className="max-w-md bg-[#050b1a] border-none text-white rounded-[24px] p-6 shadow-2xl">
+            <div className="flex items-start gap-4">
+              <CheckCircle2Icon className="text-green-400 w-6 h-6" />
+              <div className="flex-1">
+                <AlertTitle className="font-black text-lg mb-1">تمت الإضافة للفاتورة!</AlertTitle>
+                <AlertDescription className="text-slate-400 font-bold">
+                  تم إدراج المنتج في القائمة بنجاح. هل تريد إنهاء الطلب الآن؟
+                </AlertDescription>
+                
+                <AlertAction className="mt-4 flex gap-3">
+                  {/* Go to invoice button*/}
+                  <Button 
+                    size="sm" 
+                    className="bg-[#3198c1] hover:bg-[#287da1] text-white rounded-xl font-black px-6"
+                    onClick={() => navigate('/CurrentInvoice')}
+                  >
+                    عرض الفاتورة
+                  </Button>
+
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="border-slate-700 text-white hover:bg-slate-800 rounded-xl font-black"
+                    onClick={() => setShowSuccessAlert(false)}
+                  >
+                    إضافة المزيد
+                  </Button>
+                </AlertAction>
+              </div>
+            </div>
+          </Alert>
+        </div>
+      )}
+
+
       {/* Header */}
       <div className="flex items-center gap-6 mb-12">
         <button onClick={() => navigate(-1)} className="p-4 bg-white rounded-[20px] shadow-sm hover:bg-slate-50 transition-all">
@@ -105,7 +154,7 @@ const ProductVariants = ({ addToInvoice }) => {
                 LabelTitle={"الكمية المطلوبة"} 
                 type="number"
                 className="bg-white/5 border-white/10 text-white"
-                value={saleDetails.quantity}
+                value={saleDetails.quantity }
                 onChange={(e) => setSaleDetails({...saleDetails, quantity: e.target.value})}
               />
 

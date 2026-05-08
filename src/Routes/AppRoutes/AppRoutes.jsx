@@ -23,6 +23,7 @@ import Branches_page from "@/pages/Programer/Branches/Branches_page";
 import Payments_page from "@/pages/Programer/payments/Payments_page";
 import SubKey_Page from "@/pages/Programer/KeySub/SubKey_Page";
 import {AdminLayout} from "@/Layout/AdminSideBar/AdminLayout";
+import EmployeeLayout from "@/Layout/EmployeeSideBar/EmployeeLayout";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -51,19 +52,21 @@ export default function AppRoutes() {
       
       <Route 
         path="/EmployeeDashboard" 
-        element={<ProtectedRoute><EmployeeDashboard_page /></ProtectedRoute>} 
+        element={<ProtectedRoute><EmployeeLayout><EmployeeDashboard_page /></EmployeeLayout></ProtectedRoute>} 
       />
 
       <Route 
         path="/EmployeeProducts" 
-        element={<ProtectedRoute><EmployeeProducts_page /></ProtectedRoute>} 
+        element={<ProtectedRoute><EmployeeLayout><EmployeeProducts_page /></EmployeeLayout></ProtectedRoute>} 
       />
 
       <Route 
         path="/EmployeeProducts/:productId/variants" 
         element={
           <ProtectedRoute>
+            <EmployeeLayout>
             <EmployeeProductVariants_page addToInvoice={addToInvoice} />
+            </EmployeeLayout>
           </ProtectedRoute>
         } 
       />
@@ -72,8 +75,10 @@ export default function AppRoutes() {
         path="/CurrentInvoice" 
         element={
           <ProtectedRoute>
+           <EmployeeLayout>
             <CurrentInvoice_page cartItems={cartItems} setCartItems={setCartItems} />
-          </ProtectedRoute>
+          </EmployeeLayout>
+        </ProtectedRoute>
         } 
       />
 

@@ -13,7 +13,7 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
   const totalAmount = cartItems.reduce((acc, item) => acc + (item.quantity * item.sold_at_price), 0);
 
   const removeItem = (index) => {
-    setCartItems(cartItems.filter((_, i) => i !== index));
+    setCartItems(cartItems.filter((i) => i !== index));
   };
 
   const handleSubmit = async () => {

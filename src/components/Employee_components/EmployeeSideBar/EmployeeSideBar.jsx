@@ -1,19 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutGrid, ShoppingBag, Package, BarChart3, Settings, Plus, BookOpen } from 'lucide-react';
+import { LayoutGrid, BarChart3, BookOpen, ShoppingBag, Package } from 'lucide-react';
 
 function EmployeeSideBar({ isOpen, setIsOpen }) {
-  const [IsActive, SetIsActive] = useState('EmployeeDashboard');
-
   const menuItems = [
     { name: 'EmployeeDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
-    { name: 'CurrentInvoice', icon: LayoutGrid, label: 'الفاتورة الحالية ' },
-    { name: 'Reports', icon: BarChart3, label: 'التقارير' },
+    { name: 'EmployeeProducts', icon: Package, label: 'المنتجات' },
+    { name: 'CurrentInvoice', icon: ShoppingBag, label: 'الفاتورة الحالية' },
+    // { name: 'Reports', icon: BarChart3, label: 'التقارير' },
   ];
 
   return (
     <>
-
+      {/* Overlay for mobile */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden transition-opacity"
@@ -22,36 +21,48 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
       )}
 
       <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'} md:relative md:flex`} dir="rtl">
+        ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'} md:sticky md:flex`} dir="rtl">
         
-
+        {/* Logo Section */}
         <div className="p-8 flex items-center gap-3">
           <div className="w-10 h-10 bg-[#050b1a] rounded-xl flex items-center justify-center shadow-lg shadow-black/20 text-white">
             <BookOpen size={22} />
           </div>
           <div className="flex flex-col">
             <h1 className="text-[15px] font-black text-[#0f172a] leading-tight tracking-tight">The Editorial POS</h1>
-            <span className="text-[10px] font-bold text-[#3198c1] opacity-80">نظام الإدارة الراقي</span>
+            <span className="text-[10px] font-bold text-[#3198c1] opacity-80">نظام الموظف</span>
           </div>
         </div>
 
-
+        {/* Navigation Links */}
         <nav className="flex-1 px-6 space-y-2 mt-4">
           {menuItems.map((item) => (
-        <NavLink
-      key={item.name}
-      to={`/${item.name}`} 
-      className={({ IsActive }) => `
-        cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
-        ${IsActive ? 'bg-slate-50 text-[#0f172a]' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
-      `}
-    >
-      <span className="text-sm font-bold">{item.label}</span>
-      <item.icon className="w-5 h-5" />
-    </NavLink>
+            <NavLink
+              key={item.name}
+              to={`/${item.name}`}
+              onClick={() => setIsOpen(false)} 
+              className={({ isActive }) => `
+                cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
+                ${isActive ? 'bg-[#f8fafc] text-[#0f172a] shadow-sm' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
+              `}
+            >
+              <div className="flex items-center gap-3">
+                 <item.icon className={`w-5 h-5 transition-colors`} />
+                 <span className="text-sm font-black">{item.label}</span>
+              </div>
+            </NavLink>
           ))}
         </nav>
-        
+
+        {/* Footer/User Info  */}
+        <div className="p-6 border-t border-slate-50">
+           <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-8 h-8 bg-[#3198c1] rounded-lg flex items-center justify-center text-white font-black text-xs">E</div>
+              <div className="flex flex-col">
+                <span className="text-xs font-black text-[#0f172a]">موظف المبيعات</span>
+              </div>
+           </div>
+        </div>
       </aside>
     </>
   );

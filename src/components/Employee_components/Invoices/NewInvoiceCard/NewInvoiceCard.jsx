@@ -1,10 +1,11 @@
 import React from 'react';
 import { ShoppingCart } from 'lucide-react';
 import MyButton from '@/components/MyButton/MyButton';
+import { Link } from 'react-router-dom';
 
 const NewInvoiceCard = ({ onOpenBilling }) => {
   return (
-    <div className="bg-[#050505] rounded-[32px] p-8 flex flex-col justify-between min-h-[300px] w-full max-w-sm relative overflow-hidden group">
+    <Link to="/EmployeeProducts"className="bg-[#050505] rounded-[32px] p-8 flex flex-col justify-between min-h-[300px] w-full max-w-sm relative overflow-hidden group">
 
       <div className="self-end bg-[#1a1a1a] p-4 rounded-2xl text-white group-hover:scale-110 transition-transform">
         <ShoppingCart size={28} />
@@ -26,7 +27,7 @@ const NewInvoiceCard = ({ onOpenBilling }) => {
           className="bg-white text-black font-black py-4 px-10 rounded-full text-sm hover:bg-slate-200 transition-colors shadow-lg"
         />
               </div>
-    </div>
+    </Link>
   );
 };
 
