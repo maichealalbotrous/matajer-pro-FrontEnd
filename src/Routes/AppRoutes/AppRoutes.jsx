@@ -24,6 +24,7 @@ import Payments_page from "@/pages/Programer/payments/Payments_page";
 import SubKey_Page from "@/pages/Programer/KeySub/SubKey_Page";
 import {AdminLayout} from "@/Layout/AdminSideBar/AdminLayout";
 import EmployeeLayout from "@/Layout/EmployeeSideBar/EmployeeLayout";
+import ValidateCode_page from "@/pages/validateCode/validateCode_page";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -35,6 +36,9 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/Auth" element={<Auth_page />} />
+      <Route path="/ValidateCode" element={<ValidateCode_page />} />
+
+
 
       {/* --- (Admin Routes) --- */}
       <Route path="/AdminDashboard" element={<ProtectedRoute><AdminLayout><AdminDashboard /></AdminLayout></ProtectedRoute>} />
