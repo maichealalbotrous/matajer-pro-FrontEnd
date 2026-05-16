@@ -25,6 +25,7 @@ import SubKey_Page from "@/pages/Programer/KeySub/SubKey_Page";
 import {AdminLayout} from "@/Layout/AdminSideBar/AdminLayout";
 import EmployeeLayout from "@/Layout/EmployeeSideBar/EmployeeLayout";
 import ValidateCode_page from "@/pages/validateCode/validateCode_page";
+import Branches from "@/components/Branch_component/Branches/Branches";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -37,6 +38,8 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/Auth" element={<Auth_page />} />
       <Route path="/ValidateCode" element={<ValidateCode_page />} />
+      <Route path="/Branches" element={<Branches />} />
+
 
 
 

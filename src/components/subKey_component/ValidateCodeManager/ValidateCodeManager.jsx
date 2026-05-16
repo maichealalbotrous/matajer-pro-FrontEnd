@@ -4,24 +4,40 @@ import { ArrowRight } from 'lucide-react';
 import OTPHeader from '../OTPHeader/OTPHeader';
 import OTPInputForm from '../OTPInputForm/OTPInputForm';
 import OTPActions from '../OTPActions/OTPActions';
+import Public_Alert from "@/components/public_Alert/Public_Alert"; 
+import { executeBranchVerification } from './lib';
 
 
 const ValidateCodeManager = () => {
   const navigate = useNavigate();
-  const [otpValue, setOtpValue] = useState("");
+  const [otpValue, setOtpValue] = useState(""); 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [alertConfig, setAlertConfig] = useState({
+    isVisible: false,
+    title: "",
+    description: ""
+  });
 
   const handleVerify = () => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      navigate('/dashboard'); 
-    }, 2000);
+    executeBranchVerification({
+      otpValue,
+      setIsSubmitting,
+      setAlertConfig,
+      navigate
+    });
   };
 
   return (
     <div className="min-h-screen bg-[#fcfcfc] flex items-center justify-center p-6 relative" dir="rtl">
-      {/* reutun button*/}
+      
+      <Public_Alert 
+        isVisible={alertConfig.isVisible}
+        title={alertConfig.title}
+        dis={alertConfig.description}
+        onClose={() => setAlertConfig(prev => ({ ...prev, isVisible: false }))}
+      />
+
       <button 
         onClick={() => navigate(-1)}
         className="absolute top-10 right-10 p-4 bg-white rounded-2xl shadow-sm hover:bg-slate-50 text-slate-400 transition-all"
@@ -31,7 +47,7 @@ const ValidateCodeManager = () => {
 
       <div className="max-w-md w-full bg-white p-10 rounded-[40px] shadow-xl shadow-slate-100 border border-slate-50 flex flex-col items-center">
         
-        <OTPHeader />
+        <OTPHeader /> 
 
         <OTPInputForm 
           value={otpValue} 
@@ -40,9 +56,8 @@ const ValidateCodeManager = () => {
 
         <OTPActions 
           onVerify={handleVerify}
-          onBack={() => navigate('/login')}
           isSubmitting={isSubmitting}
-          isValid={otpValue.length === 6}
+          isValid={otpValue.length === 8} 
         />
         
       </div>
