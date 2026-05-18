@@ -9,7 +9,7 @@ export const LoginUser = async (phone, password) => {
     }
 };
 
-export const RegisterAdmin= async (name, phone, password) => {
+export const RegisterAdmin = async (name, phone, password) => {
     try {
         const response = await api.post('/Auth/register', { name, phone, password });
         return response.data;
@@ -18,21 +18,21 @@ export const RegisterAdmin= async (name, phone, password) => {
     }
 };
 
-// handleAuthSubmit function
 export const handleAuthSubmit = async ({ 
     isLoginMode, 
     formData, 
     setLoading, 
     navigate, 
-    setAlertConfig 
+    setAlertConfig,
+    login 
 }) => {
     setLoading(true);
     try {
         if (isLoginMode) {
             const response = await LoginUser(formData.phone, formData.password);
             
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify(response.user));
+            // 🌟 السطر السحري: نقوم باستدعاء الدالة لتحديث الـ State محلياً وفي المتصفح معاً
+            login(response.user, response.token);
 
             // (Routing Logic)
             if (response.is_super) {
@@ -63,9 +63,10 @@ export const handleAuthSubmit = async ({
                 }
             }
         } else {
-            // RegisterAdmin
             const data = await RegisterAdmin(formData.name, formData.phone, formData.password);
-            localStorage.setItem('token', data.token);
+            
+            login(data.user, data.token);
+            
             navigate('/Branches');
             setAlertConfig({ isVisible: true, title: "تم الإنشاء", description: "يرجى إضافة بيانات فرعك الآن" });
         }

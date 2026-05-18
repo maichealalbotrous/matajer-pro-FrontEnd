@@ -8,6 +8,7 @@ import { LoginUser } from "./lib";
 import Public_Alert from "@/components/public_Alert/Public_Alert";
  import { handleAuthSubmit } from "./lib"; 
 import AuthHeader from "../AuthHeader/AuthHeader";
+import { useAuth } from "@/context/AuthContext/AuthContext";
 
 export function LoginForm() {
   const [isLoginMode, setIsLoginMode] = useState(true);
@@ -27,15 +28,19 @@ export function LoginForm() {
   });
 
   // onSubmit
-  const onSubmit = () => {
+const { login } = useAuth();
+
+const onSubmit = (e) => {
+    e.preventDefault();
     handleAuthSubmit({
-      isLoginMode,
-      formData,
-      setLoading,
-      navigate,
-      setAlertConfig
+        isLoginMode,
+        formData,
+        setLoading,
+        navigate,
+        setAlertConfig,
+        login 
     });
-  };
+};
   return (
 
     <div className="min-h-screen flex items-center justify-center p-4 antialiased " dir="rtl">

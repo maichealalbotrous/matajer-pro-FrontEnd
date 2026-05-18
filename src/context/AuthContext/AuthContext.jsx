@@ -8,22 +8,28 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      setUser({ name: "Admin", role: "admin", branch_id: 1 });
+    const localToken = localStorage.getItem('token');
+    const localUserData = localStorage.getItem('user');
+
+    if (localToken && localUserData) {
+      setToken(localToken);
+      setUser(JSON.parse(localUserData));
     }
     setLoading(false);
-  }, [token]);
+  }, []);
 
   const login = (userData, userToken) => {
     setUser(userData);
     setToken(userToken);
     localStorage.setItem('token', userToken);
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   return (
@@ -33,6 +39,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

@@ -37,8 +37,8 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/Auth" element={<Auth_page />} />
-      <Route path="/ValidateCode" element={<ValidateCode_page />} />
-      <Route path="/Branches" element={<Branches />} />
+      <Route path="/ValidateCode" element={<ProtectedRoute><ValidateCode_page /></ProtectedRoute>} />
+      <Route path="/Branches" element={<ProtectedRoute><Branches /></ProtectedRoute>} />
 
 
 
