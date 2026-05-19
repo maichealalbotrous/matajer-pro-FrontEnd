@@ -1,27 +1,37 @@
-import React, { useEffectEvent, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { UserPlus, User, Phone, Lock } from 'lucide-react';
+import MyInput from '@/components/MyInput/MyInput';
 import MyButton from '@/components/MyButton/MyButton';
-import MyInput from '@/components/MyInput/MyInput'; 
+
 
 function EmployeeModal({ isOpen, onClose, onSave, employee = null }) {
-  const [formData, SetFormData] = useState({ name: '', phone: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', phone: '', password: '' });
 
-  useEffectEvent(() => {
-    if (employee) {
-      SetFormData({ name: employee.name, phone: employee.phone, password: '' });
-    } else {
-      SetFormData({ name: '', phone: '', password: '' });
+  useEffect(() => {
+    if (isOpen) {
+      if (employee) {
+        setFormData({ name: employee.name, phone: employee.phone, password: '' });
+      } else {
+        setFormData({ name: '', phone: '', password: '' });
+      }
     }
   }, [employee, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    if (!formData.name || !formData.phone) {
+        alert("يرجى ملء الحقول الأساسية المطلوبة");
+        return;
+    }
+
     const dataToSave = {
       name: formData.name,
       phone: formData.phone,
     };
 
+    // إرسال كلمة المرور فقط في حال الإضافة الجديدة أو إذا قام المدير بكتابة كلمة جديدة لتحديثها
     if (!employee || formData.password) {
       dataToSave.password = formData.password;
     }
@@ -46,27 +56,27 @@ function EmployeeModal({ isOpen, onClose, onSave, employee = null }) {
             LabelTitle={"اسم الموظف"} 
             icon={<User size={18}/>} 
             value={formData.name}
-            onChange={(e) => SetFormData({...formData, name: e.target.value})}
-            placeholder="اسم المستخدم"
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            placeholder="اسم الموظف الثلاثي"
           />
           <MyInput 
             LabelTitle={"رقم الهاتف"} 
             icon={<Phone size={18}/>} 
             value={formData.phone}
-            onChange={(e) => SetFormData({...formData, phone: e.target.value})}
+            onChange={(e) => setFormData({...formData, phone: e.target.value})}
             placeholder="09xxxxxxxx"
           />
           <MyInput 
-            LabelTitle={employee ? "كلمة المرور (اتركها فارغة لعدم التغيير)" : "كلمة المرور"}
+            LabelTitle={employee ? "كلمة المرور الجديدة (اتركها فارغة لعدم التغيير)" : "كلمة المرور"}
             type="password"
             placeholder="........"
             icon={<Lock size={18}/>} 
             value={formData.password}
-            onChange={(e) => SetFormData({...formData, password: e.target.value})}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
           />
           
-          <MyButton 
-            title={employee ? "تحديث البيانات" : "إضافة الموظف للفرع"} 
+          <MyButton
+            title={employee ? "تحديث بيانات الموظف" : "إضافة الموظف للفرع"} 
             type="submit"
             className="w-full mt-4 py-4 bg-[#0f172a] text-white rounded-2xl font-black shadow-xl"
           />
