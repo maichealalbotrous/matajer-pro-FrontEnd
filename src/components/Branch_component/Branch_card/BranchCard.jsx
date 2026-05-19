@@ -1,26 +1,8 @@
 import { Store, Box } from "lucide-react";
 
-
-//  const testData = [
-//     { name: "فرع النخيل مول", location: "الرياض، مخرج 9" },
-//     { name: "فرع الحمراء", location: "جدة، حي الأندلس" },
-//     { name: "فرع مكة الرئيسي", location: "مكة المكرمة، الشوقية" },
-//     { name: "فرع مكة الرئيسي", location: "مكة المكرمة، الشوقية" },
-//     { name: "فرع مكة الرئيسي", location: "مكة المكرمة، الشوقية" }
-
-// ];
-
-//  const employeeData = [
-//     { name: "Alice" },
-//     { name: "Bob" },
-//     { name: "Charlie" },
-//     { name: "David" },
-
-// ];
-
-function BranchCard({ BrachData , Employee  }) {
+function BranchCard({ BrachData , Employee , onClick }) {
   return (
-    <main className="w-full px-4 py-8" dir="rtl">
+    <main onClick={onClick} className="w-full px-4 py-8" dir="rtl">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
         
         {BrachData && BrachData.map((branch, index) => (

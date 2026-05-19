@@ -1,17 +1,51 @@
-import React, { useState } from 'react';
-import { Plus, X } from 'lucide-react';
-import BranchCard from '../Branch_card/BranchCard';
-import BranchHeader from '../Branch_Header/BranchHeader';
-import AddBranchForm from '../AddBranchForm/AddBranchForm';
+import React, { useState, useEffect } from 'react';
+import { Plus, X, RefreshCw } from 'lucide-react';
 
+import { fetchBranchesFromServer } from '../Branch_card/lib';
+import BranchCard from '../Branch_card/BranchCard';
+import AddBranchForm from '../AddBranchForm/AddBranchForm';
+import BranchHeader from '../Branch_Header/BranchHeader';
+import { useNavigate } from 'react-router-dom';
 function Branches() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [branchesList, setBranchesList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const loadBranchesData = async () => {
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const data = await fetchBranchesFromServer();
+      if (data && !Array.isArray(data)) {
+        setBranchesList([data]);
+      } else {
+        setBranchesList(data || []);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBranchesData();
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-[#f8fafc]"> 
       <BranchHeader />
       
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-end mt-8">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center mt-8">
+        <button 
+          onClick={loadBranchesData}
+          className="p-3 bg-white text-slate-600 rounded-2xl border border-slate-100 shadow-sm hover:bg-slate-50 transition-all active:scale-95"
+          title="تحديث البيانات"
+        >
+          <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+        </button>
+
         <button 
           onClick={() => setIsModalOpen(true)}
           className="flex items-center gap-2 px-6 py-3.5 bg-[#050b1a] hover:bg-[#0a1429] text-white font-black text-sm rounded-2xl shadow-lg shadow-black/5 transition-all active:scale-[0.98]"
@@ -21,7 +55,20 @@ function Branches() {
         </button>
       </div>
 
-      <BranchCard />
+      <div className="max-w-7xl mx-auto min-h-[200px]">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#0f172a]"></div>
+          </div>
+        ) : errorMessage ? (
+          <div className="text-center py-16 px-4">
+            <p className="text-red-500 font-bold mb-3">{errorMessage}</p>
+            <button onClick={loadBranchesData} className="text-xs font-black text-[#3198c1] underline">إعادة المحاولة</button>
+          </div>
+        ) : (
+          <BranchCard onClick={()=>{navigate('/AdminDashboard')}} BrachData={branchesList} Employee={[]} />
+        )}
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -33,7 +80,10 @@ function Branches() {
               <X size={18} />
             </button>
             
-            <AddBranchForm onBranchAdded={() => setIsModalOpen(false)} />
+            <AddBranchForm onBranchAdded={() => {
+              setIsModalOpen(false);
+              loadBranchesData();
+            }} />
           </div>
         </div>
       )}
