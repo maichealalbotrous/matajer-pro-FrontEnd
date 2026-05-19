@@ -5,9 +5,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 function EmployeeList({ employees = [], onEdit, onDelete }) {
   const employeesArray = Array.isArray(employees) ? employees : Object.values(employees);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "تاريخ غير متوفر";
+    try {
+        return new Date(dateString).toLocaleDateString('ar-EG');
+    } catch {
+        return dateString;
+    }
+  };
+
   return (
     <div className="w-full" dir="rtl">
-      {/* 1.(Desktop) */}
+      {/* 1(Desktop) */}
       <div className="hidden md:block bg-white rounded-[32px] border border-slate-50 shadow-sm overflow-hidden">
         <Table className="text-right">
           <TableHeader className="bg-slate-50/50">
@@ -25,7 +34,7 @@ function EmployeeList({ employees = [], onEdit, onDelete }) {
                 <TableCell className="p-6">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#0f172a] text-white rounded-xl flex items-center justify-center font-black">
-                      {emp.name.charAt(0).toUpperCase()}
+                      {emp.name ? emp.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                     <span className="font-black text-[#0f172a]">{emp.name}</span>
                   </div>
@@ -37,14 +46,14 @@ function EmployeeList({ employees = [], onEdit, onDelete }) {
                   </span>
                 </TableCell>
                 <TableCell className="p-6 text-xs font-bold text-slate-400">
-                  {new Date(emp.created_at).toLocaleDateString('ar-EG')}
+                  {formatDate(emp.created_at)}
                 </TableCell>
                 <TableCell className="p-6">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => onEdit(emp)} className="p-2 bg-slate-100 text-slate-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
+                    <button onClick={() => onEdit(emp)} className="p-2 bg-slate-100 text-slate-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all" title="تعديل">
                       <Edit3 size={18} />
                     </button>
-                    <button onClick={() => onDelete(emp.id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all">
+                    <button onClick={() => onDelete(emp.id)} className="p-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all" title="حذف">
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -55,14 +64,14 @@ function EmployeeList({ employees = [], onEdit, onDelete }) {
         </Table>
       </div>
 
-      {/* 2. Mobile) */}
+      {/* 2.(Mobile) */}
       <div className="md:hidden space-y-4">
         {employeesArray.map((emp) => (
           <div key={emp.id} className="bg-white p-5 rounded-[24px] border border-slate-100 shadow-sm space-y-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-[#0f172a] text-white rounded-xl flex items-center justify-center font-black">
-                  {emp.name.charAt(0).toUpperCase()}
+                  {emp.name ? emp.name.charAt(0).toUpperCase() : 'U'}
                 </div>
                 <span className="font-black text-[#0f172a]">{emp.name}</span>
               </div>
@@ -75,7 +84,7 @@ function EmployeeList({ employees = [], onEdit, onDelete }) {
               <span>{emp.phone}</span>
             </div>
             <div className="border-t pt-3 flex justify-between items-center">
-              <span className="text-xs text-slate-400">{new Date(emp.created_at).toLocaleDateString('ar-EG')}</span>
+              <span className="text-xs text-slate-400">{formatDate(emp.created_at)}</span>
               <div className="flex justify-center gap-2">
                 <button onClick={() => onEdit(emp)} className="p-2 bg-slate-100 text-slate-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
                   <Edit3 size={18} />
@@ -89,8 +98,11 @@ function EmployeeList({ employees = [], onEdit, onDelete }) {
         ))}
       </div>
 
+      {/* If the data null*/}
       {employeesArray.length === 0 && (
-        <div className="p-10 text-center text-slate-400 font-bold">لا يوجد موظفين حالياً</div>
+        <div className="p-16 bg-white border border-dashed rounded-[32px] text-center text-slate-400 font-bold">
+          لا يوجد موظفين مسجلين في هذا الفرع حالياً
+        </div>
       )}
     </div>
   );
