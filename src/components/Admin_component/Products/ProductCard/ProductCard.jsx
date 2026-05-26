@@ -1,8 +1,8 @@
 import React from 'react';
-import { ChevronLeft, Package } from 'lucide-react';
+import { ChevronLeft, Package, Edit3, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const ProductEmployeeCard = ({ productsData }) => {
+const ProductCard = ({ productsData, onEditProduct, onDeleteProduct }) => {
   const navigate = useNavigate();
 
   if (!productsData || productsData.length === 0) {
@@ -20,8 +20,9 @@ const ProductEmployeeCard = ({ productsData }) => {
         <div 
           key={product.product_id}
           onClick={() => navigate(`/products/${product.product_id}/variants`)}
-          className="group bg-white border border-slate-100 rounded-[35px] p-4 shadow-sm hover:shadow-xl hover:border-blue-200 transition-all cursor-pointer relative overflow-hidden"
+          className="group bg-white border border-slate-100 rounded-[35px] p-4 shadow-sm hover:shadow-xl hover:border-slate-200 transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between"
         >
+          {/* جزء الصورة */}
           <div className="aspect-square rounded-[25px] bg-slate-50 mb-4 overflow-hidden relative">
             {product.image ? (
               <img 
@@ -34,11 +35,37 @@ const ProductEmployeeCard = ({ productsData }) => {
                 <Package size={48} />
               </div>
             )}
+
+            {/* أزرار التحكم: تظهر مباشرة كأزرار عائمة صغيرة على الجوال، وبتأثير الطفو الكامل على الشاشات الكبيرة */}
+            <div className="absolute inset-0 md:bg-slate-900/10 md:opacity-0 md:group-hover:opacity-100 md:backdrop-blur-[2px] transition-all flex items-start md:items-center justify-end md:justify-center p-3 md:p-0 gap-2 rounded-[25px]">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // منع الانتقال لصفحة الموديلات
+                  onEditProduct(product);
+                }}
+                className="p-2.5 md:p-3 bg-white text-slate-700 hover:text-[#0f172a] rounded-xl shadow-md border border-slate-100 md:border-none transition-all hover:scale-105 active:scale-95"
+                title="تعديل المنتج"
+              >
+                <Edit3 size={15} className="md:w-4 md:h-4" />
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // منع الانتقال لصفحة الموديلات
+                  onDeleteProduct(product);
+                }}
+                className="p-2.5 md:p-3 bg-white text-red-500 hover:bg-red-50 rounded-xl shadow-md border border-slate-100 md:border-none transition-all hover:scale-105 active:scale-95"
+                title="حذف المنتج"
+              >
+                <Trash2 size={15} className="md:w-4 md:h-4" />
+              </button>
+            </div>
           </div>
 
-          <div className="px-2 pb-2 text-right">
+          {/* التفاصيل السفلية */}
+          <div className="px-2 pb-2 text-right mt-auto">
             <div className="flex justify-between items-center mb-1">
-              <h3 className="font-black text-xl text-[#0f172a] truncate ml-2">
+              <h3 className="font-black text-lg text-[#0f172a] truncate ml-2">
                 {product.product_name}
               </h3>
               <div className="w-8 h-8 flex-shrink-0 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-[#0f172a] group-hover:text-white transition-all">
@@ -47,7 +74,7 @@ const ProductEmployeeCard = ({ productsData }) => {
             </div>
             
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 font-bold text-sm">
+              <span className="text-slate-400 font-bold text-xs">
                 {product.variants_groups?.length || 0} موديلات متاحة
               </span>
             </div>
@@ -58,4 +85,4 @@ const ProductEmployeeCard = ({ productsData }) => {
   );
 };
 
-export default ProductEmployeeCard;
+export default ProductCard;
