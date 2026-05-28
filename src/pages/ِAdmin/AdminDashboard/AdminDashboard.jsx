@@ -16,12 +16,45 @@ import { testInventoryData } from '@/components/Admin_component/Inventory/Invent
 import ExpensesCard from '@/components/Admin_component/Expenses/ExpensesCard/ExpensesCard'
 import DiscountsStatsCard from '@/components/Admin_component/Discounts/DiscountsStatsCard/DiscountsStatsCard'
 import { getProductsFromServer } from '@/components/Admin_component/Products/ProductsManager/lib'
-// import { getProductsStatsFromServer } from '@/components/Admin_component/Products/ProductsStatCard/lib'
+import { getDiscountsFromServer } from '@/components/Admin_component/Discounts/DiscountsManager/lib'
 
 function AdminDashboard() {
   const [productsList, setProductsList] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [Error, setError] = useState(null);
+
+  const [DiscountssList, setDiscountssList] = useState([]);
+  const [loadingDiscounts, setLoadingDiscounts] = useState(true);
+
+  useEffect(() => {
+    const fetchDiscounts = async () => {
+      try {
+        setLoadingDiscounts(true);
+        const data = await getDiscountsFromServer();
+        setDiscountssList(data);
+      } catch (err) {
+        console.error("فشل جلب الخصومات للكارت الإحصائي:", err);
+      } finally {
+        setLoadingDiscounts(false);
+      }
+    };
+
+    fetchDiscounts();
+  }, []);
+
+  const calculateAverageDiscount = () => {
+    // فلترة الخصومات النشطة والتي تعتمد على النسبة المئوية
+    const percentageDiscounts = DiscountssList.filter(
+      d => d.discount_type === 'percentage' && d.is_active
+    );
+
+    if (percentageDiscounts.length === 0) return 0;
+
+    const total = percentageDiscounts.reduce((sum, item) => sum + Number(item.discount_value), 0);
+    
+    // إرجاع المتوسط مقرباً لأقرب رقم صحيح
+    return Math.round(total / percentageDiscounts.length);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -47,6 +80,11 @@ function AdminDashboard() {
     fetchProducts();
     return () => { isMounted = false; };
   }, []);
+
+
+  useEffect(()=>{
+
+  },[])
 
   return (
     <div className="flex h-screen bg-[#f8fafc] overflow-hidden" dir="rtl">
@@ -97,9 +135,9 @@ function AdminDashboard() {
               </div>
 
               {/* DiscountsStatsCard */}
-              <div className="md:col-span-4">
-                <DiscountsStatsCard amount={128400} />
-              </div>
+             <DiscountsStatsCard 
+             averageDiscount={loadingDiscounts ? "..." : calculateAverageDiscount()} 
+            />
 
             </div>
           </div>

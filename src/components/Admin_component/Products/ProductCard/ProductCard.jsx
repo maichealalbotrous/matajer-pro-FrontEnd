@@ -22,6 +22,7 @@ const ProductCard = ({ productsData, onEditProduct, onDeleteProduct }) => {
           onClick={() => navigate(`/products/${product.product_id}/variants`)}
           className="group bg-white border border-slate-100 rounded-[35px] p-4 shadow-sm hover:shadow-xl hover:border-slate-200 transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between"
         >
+          <div className='text-sm text-slate-500 font-bold'>معرف المنتج: {product.product_id}</div>
           {/* جزء الصورة */}
           <div className="aspect-square rounded-[25px] bg-slate-50 mb-4 overflow-hidden relative">
             {product.image ? (

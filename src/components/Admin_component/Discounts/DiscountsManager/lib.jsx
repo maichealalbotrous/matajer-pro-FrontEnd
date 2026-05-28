@@ -1,42 +1,47 @@
-export const discountsData = [
-  {
-    "id": 1,
-    "product_id": 101,
-    "product": { "model_name": "iPhone 15 Pro" },
-    "discount_type": "percentage",
-    "discount_value": 10,
-    "start_date": "2026-04-01",
-    "end_date": "2026-05-01",
-    "is_active": true
-  },
-  {
-    "id": 2,
-    "product_id": 105,
-    "product": { "model_name": "Samsung S24 Ultra" },
-    "discount_type": "fixed",
-    "discount_value": 500,
-    "start_date": "2026-04-15",
-    "end_date": "2026-04-30",
-    "is_active": true
-  },
-  {
-    "id": 3,
-    "product_id": 110,
-    "product": { "model_name": "MacBook Air M3" },
-    "discount_type": "percentage",
-    "discount_value": 15,
-    "start_date": "2026-01-01",
-    "end_date": "2026-02-01",
-    "is_active": false
-  },
-  {
-    "id": 4,
-    "product_id": 115,
-    "product": { "model_name": "AirPods Pro 2" },
-    "discount_type": "fixed",
-    "discount_value": 150,
-    "start_date": "2026-04-20",
-    "end_date": "2026-05-20",
-    "is_active": true
+import discountApi from './api';
+
+
+// 1. getDiscounts
+export const getDiscountsFromServer = async () => {
+  try {
+    const response = await discountApi.get('/index');
+    if (response.data && response.data.success) {
+      return Array.isArray(response.data.data) ? response.data.data : [];
+    }
+    return [];
+  } catch (error) {
+    throw error.response?.data || { message: "فشل جلب قائمة الخصومات من النظام" };
   }
-]
+};
+
+// 2.addDiscount
+export const addDiscountToServer = async (discountData) => {
+  try {
+    const response = await discountApi.post('/store', discountData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "فشل إنشاء قاعدة الخصم" };
+  }
+};
+
+// 3. تحديث قاعدة خصم حالية
+export const updateDiscountOnServer = async (discountData) => {
+  try {
+    const response = await discountApi.post('/update', discountData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "فشل تحديث بيانات الخصم" };
+  }
+};
+
+// 4.  deleteDiscount
+export const deleteDiscountFromServer = async (id) => {
+  try {
+    const response = await discountApi.delete('/destroy', { 
+      data: { id: Number(id) } 
+    }); 
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "حدث خطأ أثناء حذف قاعدة الخصم" };
+  }
+};
