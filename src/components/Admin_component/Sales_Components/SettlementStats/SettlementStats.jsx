@@ -20,7 +20,7 @@ function SettlementStats({ statistics }) {
       desc: "مصاريف الفرع الحالية" 
     },
     { 
-      label: "أرباح المبيعات", 
+      label: "إجمالي المبيعات", 
       value: statistics?.total_gross_revenue, 
       icon: <Wallet size={24} />, 
       color: "text-green-600", 
