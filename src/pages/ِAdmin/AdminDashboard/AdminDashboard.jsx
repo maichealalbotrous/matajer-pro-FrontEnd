@@ -17,15 +17,57 @@ import ExpensesCard from '@/components/Admin_component/Expenses/ExpensesCard/Exp
 import DiscountsStatsCard from '@/components/Admin_component/Discounts/DiscountsStatsCard/DiscountsStatsCard'
 import { getProductsFromServer } from '@/components/Admin_component/Products/ProductsManager/lib'
 import { getDiscountsFromServer } from '@/components/Admin_component/Discounts/DiscountsManager/lib'
+import { getExpensesFromServer } from '@/components/Admin_component/Expenses/ExpensesManager/lib'
 
 function AdminDashboard() {
+ const [Error, setError] = useState(null);
+
+ {/**productsList //////////////////////////////////////////////////////////////*/}
   const [productsList, setProductsList] = useState([]);
   const [Loading, setLoading] = useState(true);
-  const [Error, setError] = useState(null);
+ {/**productsList //////////////////////////////////////////////////////////////*/}
 
+ {/**DiscountssList //////////////////////////////////////////////////////////////*/}
   const [DiscountssList, setDiscountssList] = useState([]);
   const [loadingDiscounts, setLoadingDiscounts] = useState(true);
+ {/**DiscountssList //////////////////////////////////////////////////////////////*/}
 
+
+ {/**ExpensesList //////////////////////////////////////////////////////////////*/}
+  const [ExpensesList, setExpensesList] = useState([]);
+  const [loadingExpenses, setLoadingExpenses] = useState(true);
+ {/**ExpensesList //////////////////////////////////////////////////////////////*/}
+
+  {/**Expenses UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        setLoadingExpenses(true);
+        const data = await getExpensesFromServer();
+        setExpensesList(data);
+      } catch (err) {
+        console.error("فشل جلب المصاريف لكارت الإحصائيات:", err);
+      } finally {
+        setLoadingExpenses(false);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
+
+  // دالة ذكية لحساب مجموع المصاريف للفرع
+  const calculateTotalExpenses = () => {
+    if (ExpensesList.length === 0) return 0;
+    
+    return ExpensesList.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+  };
+
+
+  {/**Expenses UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+
+
+  {/**Discunts UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
   useEffect(() => {
     const fetchDiscounts = async () => {
       try {
@@ -55,7 +97,10 @@ function AdminDashboard() {
     // إرجاع المتوسط مقرباً لأقرب رقم صحيح
     return Math.round(total / percentageDiscounts.length);
   };
+   {/**Discunts UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
 
+
+  {/**Products UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
   useEffect(() => {
     let isMounted = true;
     const fetchProducts = async () => {
@@ -80,11 +125,9 @@ function AdminDashboard() {
     fetchProducts();
     return () => { isMounted = false; };
   }, []);
+  {/**Products UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
 
 
-  useEffect(()=>{
-
-  },[])
 
   return (
     <div className="flex h-screen bg-[#f8fafc] overflow-hidden" dir="rtl">
@@ -131,8 +174,10 @@ function AdminDashboard() {
 
               {/* ExpensesCard */}
               <div className="md:col-span-4">
-                <ExpensesCard amount={128400} />
-              </div>
+              <ExpensesCard 
+              amount={loadingExpenses ? "..." : calculateTotalExpenses()} 
+              /> 
+             </div>
 
               {/* DiscountsStatsCard */}
              <DiscountsStatsCard 

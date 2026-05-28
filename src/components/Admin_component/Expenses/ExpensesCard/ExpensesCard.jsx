@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 const ExpensesCard = ({ amount }) => {
 
     const formatAmount = (num) => {
+     if(num === 0) return "0";
     return num.toLocaleString('en-US');
   };
 
@@ -31,7 +32,7 @@ const ExpensesCard = ({ amount }) => {
             {formatAmount(amount)}
           </span>
           <span className="text-[10px] font-black text-slate-500 mr-1.5 mt-auto">
-            ر.س
+            ل.س
           </span>
         </div>
       </div>
