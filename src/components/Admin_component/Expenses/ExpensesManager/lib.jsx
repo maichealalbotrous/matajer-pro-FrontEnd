@@ -1,39 +1,43 @@
-export const testExpenses = 
-    [
-  {
-    "id": 1,
-    "type": "فواتير كهرباء",
-    "amount": 1250.50,
-    "notes": "فاتورة شهر مارس - المكتب الرئيسي",
-    "created_at": "2026-03-15T10:00:00.000000Z"
-  },
-  {
-    "id": 2,
-    "type": "صيانة دورية",
-    "amount": 4500.00,
-    "notes": "صيانة نظام التكييف المركزي",
-    "created_at": "2026-03-18T14:30:00.000000Z"
-  },
-  {
-    "id": 3,
-    "type": "أدوات مكتبية",
-    "amount": 320.00,
-    "notes": "أوراق طباعة وأحبار",
-    "created_at": "2026-04-01T09:15:00.000000Z"
-  },
-  {
-    "id": 4,
-    "type": "إيجار الفرع",
-    "amount": 15000.00,
-    "notes": "دفعة الربع الثاني من العام",
-    "created_at": "2026-04-05T08:00:00.000000Z"
-  },
-  {
-    "id": 5,
-    "type": "خدمات تنظيف",
-    "amount": 800.00,
-    "notes": null,
-    "created_at": "2026-04-10T11:00:00.000000Z"
-  }
+import { expenseApi } from "./api";
 
-]
+// 1. getExpenses
+export const getExpensesFromServer = async () => {
+  try {
+    const response = await expenseApi.get("/index");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "فشل جلب المصاريف" };
+  }
+};
+
+// 2. addExpense
+export const addExpenseToServer = async (expenseData) => {
+  try {
+    const response = await expenseApi.post("/add", expenseData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "فشل تسجيل المصروف" };
+  }
+};
+
+// 3. updateExpense
+export const updateExpenseOnServer = async (expenseData) => {
+  try {
+    const response = await expenseApi.post("/update", expenseData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "فشل تحديث المصروف" };
+  }
+};
+
+// 4.  deleteExpense
+export const deleteExpenseFromServer = async (id) => {
+  try {
+    const response = await expenseApi.delete('/delete', { 
+      data: { id: Number(id) } 
+    }); 
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "حدث خطأ أثناء حذف المصروف" };
+  }
+};
