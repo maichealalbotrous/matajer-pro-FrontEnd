@@ -12,15 +12,21 @@ import { testEmployees } from '@/components/Admin_component/Employee/EmployeesMi
 import { testInvoices } from '@/components/Admin_component/Invoices/InvoicesCard/lib';
 import { testinformationData } from '@/components/Admin_component/InformationCard/lib';
 import ProductsStateCard from '@/components/Admin_component/Products/ProductsStatCard/ProductsStatCard'
-import { testInventoryData } from '@/components/Admin_component/Inventory/InventoryCard/lib.jsx';
 import ExpensesCard from '@/components/Admin_component/Expenses/ExpensesCard/ExpensesCard'
 import DiscountsStatsCard from '@/components/Admin_component/Discounts/DiscountsStatsCard/DiscountsStatsCard'
 import { getProductsFromServer } from '@/components/Admin_component/Products/ProductsManager/lib'
 import { getDiscountsFromServer } from '@/components/Admin_component/Discounts/DiscountsManager/lib'
 import { getExpensesFromServer } from '@/components/Admin_component/Expenses/ExpensesManager/lib'
+import { getInventoryAuditFromServer } from '@/components/Admin_component/Inventory/InventoryManager/lib'
 
 function AdminDashboard() {
  const [Error, setError] = useState(null);
+
+ {/**InventorysList //////////////////////////////////////////////////////////////*/}
+  const [InventorysListList, setInventorysListList] = useState([]);
+  const [LoadingInventory, setLoadingInventory] = useState(true);
+    const [InventoryCardData, setInventoryCardData] = useState({});
+ {/**InventorysList //////////////////////////////////////////////////////////////*/}
 
  {/**productsList //////////////////////////////////////////////////////////////*/}
   const [productsList, setProductsList] = useState([]);
@@ -37,6 +43,36 @@ function AdminDashboard() {
   const [ExpensesList, setExpensesList] = useState([]);
   const [loadingExpenses, setLoadingExpenses] = useState(true);
  {/**ExpensesList //////////////////////////////////////////////////////////////*/}
+
+  {/**Inventory UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+  useEffect(() => {
+
+    const fetchInventoryCardData = async () => {
+    try {
+      setLoadingInventory(true);
+      const res = await getInventoryAuditFromServer();
+      
+      setInventorysListList(res.items || []);
+   
+      const totalPieces = (res.items || []).reduce((sum, item) => sum + (Number(item.total_group_qty) || 0), 0);
+      
+      setInventoryCardData(prev => ({
+        ...prev,
+        count: totalPieces,
+        subtitle: totalPieces > 0 ? "حالة المخزون العام مستقرة" : "المخزون فارغ حالياً",
+        type: totalPieces > 0 ? "stable" : "warning"
+      }));
+
+    } catch (error) {
+      console.error("Error fetching inventory for card:", error);
+    } finally {
+      setLoadingInventory(false);
+    }
+  };
+fetchInventoryCardData();
+  },[])
+  {/**Inventory UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+
 
   {/**Expenses UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
 
@@ -56,7 +92,7 @@ function AdminDashboard() {
     fetchExpenses();
   }, []);
 
-  // دالة ذكية لحساب مجموع المصاريف للفرع
+  // calculateTotalExpenses for the branch
   const calculateTotalExpenses = () => {
     if (ExpensesList.length === 0) return 0;
     
@@ -85,7 +121,6 @@ function AdminDashboard() {
   }, []);
 
   const calculateAverageDiscount = () => {
-    // فلترة الخصومات النشطة والتي تعتمد على النسبة المئوية
     const percentageDiscounts = DiscountssList.filter(
       d => d.discount_type === 'percentage' && d.is_active
     );
@@ -94,7 +129,6 @@ function AdminDashboard() {
 
     const total = percentageDiscounts.reduce((sum, item) => sum + Number(item.discount_value), 0);
     
-    // إرجاع المتوسط مقرباً لأقرب رقم صحيح
     return Math.round(total / percentageDiscounts.length);
   };
    {/**Discunts UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
@@ -169,8 +203,8 @@ function AdminDashboard() {
 
               {/* InventoryCard */}
               <div className="md:col-span-4">
-                <InventoryCard InventoryData={testInventoryData[0]} />
-              </div>
+          <InventoryCard InventoryData={InventoryCardData} />   
+           </div>
 
               {/* ExpensesCard */}
               <div className="md:col-span-4">

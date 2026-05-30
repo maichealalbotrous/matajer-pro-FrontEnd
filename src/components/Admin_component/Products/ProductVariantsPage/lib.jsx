@@ -14,7 +14,6 @@ export const getVariantsserver = async (backendFilters = {}) => {
       const response = await variantApi.get('/index');
       return Array.isArray(response.data) ? response.data : [];
     }
-    // return [];
   } catch (error) {
     throw error.response?.data || { message: "حدث خطأ أثناء جلب البيانات من الفلتر" };
   }
