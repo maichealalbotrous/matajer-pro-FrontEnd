@@ -5,6 +5,8 @@ import { getEmployees, addEmployee, updateEmployee, deleteEmployeeFromServer } f
 import MyButton from '@/components/MyButton/MyButton';
 import EmployeeList from '../EmployeeList/EmployeeList';
 import EmployeeModal from '../EmployeeModal/EmployeeModal';
+import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
+import { Dialog,DialogContent,DialogTitle,DialogDescription } from "@/components/ui/dialog";
 
 function EmployeeManager() {
   const [employees, setEmployees] = useState([]);
@@ -47,20 +49,84 @@ function EmployeeManager() {
   };
 
   // handleDelete
-  const handleDelete = async (id) => {
-    if (window.confirm("هل أنت متأكد من رغبتك في حذف هذا الموظف نهائياً من الفرع؟")) {
-      try {
-        await deleteEmployeeFromServer(id);
-        loadEmployees();
-      } catch (err) {
-        alert(err.message || "فشل حذف الموظف");
-      }
-    }
-  };
+const [deleteModal, setDeleteModal] = useState({
+  isOpen: false,
+  employeeId: null,
+  isProcessing: false
+});
 
+// 1. letter time shown state for toast
+const [Toast, setToast] = useState({
+  isOpen: false,
+  title: "",
+  description: "",
+  type: "success" 
+});
+
+const triggerToast = (title, description, type = "success") => {
+  setToast({ isOpen: true, title, description, type });
+  
+  setTimeout(() => {
+    setToast(prev => ({ ...prev, isOpen: false }));
+  }, 4000);
+};
+
+const handleDeleteClick = (id) => {
+  setDeleteModal({ isOpen: true, employeeId: id, isProcessing: false });
+};
+const handleExecuteDelete = async () => {
+  const { employeeId } = deleteModal;
+  try {
+    setDeleteModal(prev => ({ ...prev, isProcessing: true }));
+    
+    await deleteEmployeeFromServer(employeeId);
+    
+    setDeleteModal({ isOpen: false, employeeId: null, isProcessing: false });
+    
+    loadEmployees();
+        
+  } catch (err) {
+    setDeleteModal(prev => ({ ...prev, isProcessing: false }));
+    const errorMessage = err.message || err.error || "فشل حذف الموظف، يرجى المحاولة مرة أخرى.";
+    
+    setDeleteModal({ isOpen: false, employeeId: null, isProcessing: false });
+
+    if (typeof triggerToast === "function") {
+      triggerToast("خطأ في العملية", errorMessage);
+    } else {
+      alert(errorMessage); 
+    }
+  }
+};
   return (
     <div className="p-4 md:p-8 space-y-6 md:space-y-8 max-w-7xl mx-auto" dir="rtl">
       
+{/* confirm delete dialog*/}
+<Dialog
+  open={deleteModal.isOpen} 
+  onOpenChange={(open) => !open && setDeleteModal(prev => ({ ...prev, isOpen: false }))}
+>
+  <DialogContent className="p-0 border-none bg-transparent max-w-sm outline-none shadow-none" showCloseButton={false}>
+    
+    <div className="sr-only">
+      <DialogTitle>تأكيد حذف موظف</DialogTitle>
+      <DialogDescription>شاشة تأكيد لإزالة الموظف وصلاحياته بشكل نهائي من قاعدة البيانات.</DialogDescription>
+    </div>
+
+    <DeleteConfirmView 
+      title="حذف الموظف نهائياً"
+      description="هل أنت متأكد من رغبتك في حذف هذا الموظف نهائياً من الفرع؟ سيؤدي ذلك إلى سحب كافة صلاحيات الدخول الفورية للمنظومة."
+      confirmText="نعم، احذف الموظف"
+      processingText="جاري الحذف..."
+      variant="danger"
+      isDeleting={deleteModal.isProcessing}
+      onConfirm={handleExecuteDelete}
+      onCancel={() => setDeleteModal({ isOpen: false, employeeId: null, isProcessing: false })}
+    />
+    
+  </DialogContent>
+</Dialog>
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-[#0f172a]">إدارة الموظفين</h1>
@@ -98,10 +164,10 @@ function EmployeeManager() {
           <button onClick={loadEmployees} className="text-xs text-blue-500 underline font-black">إعادة المحاولة</button>
         </div>
       ) : (
-        <EmployeeList
+       <EmployeeList
           employees={employees} 
           onEdit={(emp) => { setSelectedEmployee(emp); setIsModalOpen(true); }}
-          onDelete={handleDelete}
+          onDelete={handleDeleteClick} 
         />
       )}
 

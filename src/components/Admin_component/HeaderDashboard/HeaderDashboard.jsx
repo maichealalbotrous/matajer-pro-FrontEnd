@@ -8,7 +8,7 @@ function HeaderDashboard({ Data = { name: "أحمد محمد", role: "مدير �
         
         <div className="flex items-center gap-4">
           <button 
-            onClick={onMenuClick}
+            onClick={onMenuClick} 
             className="p-2 bg-slate-100 rounded-xl md:hidden text-[#0f172a]"
           >
             {isOpen ? <X size={20}/> : <Menu size={20} />}
@@ -25,7 +25,7 @@ function HeaderDashboard({ Data = { name: "أحمد محمد", role: "مدير �
           <div className="flex items-center gap-3 pl-2 border-r border-slate-100 mr-2">
              <div className="text-left flex flex-col items-start hidden sm:flex">
                 <span className="text-sm font-black text-[#0f172a] leading-none">{Data.name}</span>
-                <span className="text-[10px] font-bold text-slate-400 mt-1">{Data.role}</span>
+                <span className="text-[10px] font-bold text-slate-400 mt-1">{Data.role === 'admin' ? 'مدير النظام' : 'مستخدِم'}</span>
              </div>
              <div className="relative">
                 <div className="w-11 h-11 bg-slate-100 rounded-full flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">

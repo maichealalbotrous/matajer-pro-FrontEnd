@@ -7,10 +7,6 @@ import BranchesOverviewCard from '@/components/Branch_component/BranchesOverview
 import EmployeesMiniCard from '@/components/Admin_component/Employee/EmployeesMiniCard/EmployeesMiniCard'
 import InventoryCard from '@/components/Admin_component/Inventory/InventoryCard/InventoryCard'
 
-// البيانات التجريبية والاحتياطية
-import { testEmployees } from '@/components/Admin_component/Employee/EmployeesMiniCard/lib';
-import { testInvoices } from '@/components/Admin_component/Invoices/InvoicesCard/lib';
-import { testinformationData } from '@/components/Admin_component/InformationCard/lib';
 import ProductsStateCard from '@/components/Admin_component/Products/ProductsStatCard/ProductsStatCard'
 import ExpensesCard from '@/components/Admin_component/Expenses/ExpensesCard/ExpensesCard'
 import DiscountsStatsCard from '@/components/Admin_component/Discounts/DiscountsStatsCard/DiscountsStatsCard'
@@ -18,9 +14,29 @@ import { getProductsFromServer } from '@/components/Admin_component/Products/Pro
 import { getDiscountsFromServer } from '@/components/Admin_component/Discounts/DiscountsManager/lib'
 import { getExpensesFromServer } from '@/components/Admin_component/Expenses/ExpensesManager/lib'
 import { getInventoryAuditFromServer } from '@/components/Admin_component/Inventory/InventoryManager/lib'
+import { getInvoicesServer } from '@/components/Admin_component/Invoices/InvoiceManager/lib'
+import { getEmployees } from '@/components/Admin_component/Employee/EmployeeManager/lib'
 
 function AdminDashboard() {
  const [Error, setError] = useState(null);
+
+
+{/** Information Cards States //////////////////////////////////////////////////////////////*/}
+const [informationData, setInformationData] = useState([]);
+const [loadingStats, setLoadingStats] = useState(true);
+{/** Information Cards States //////////////////////////////////////////////////////////////*/}
+
+ {/**EmployeesList //////////////////////////////////////////////////////////////*/}
+const [employeesList, setEmployeesList] = useState([]);
+const [loadingEmployees, setLoadingEmployees] = useState(true);
+{/**EmployeesList //////////////////////////////////////////////////////////////*/}
+
+
+ {/**InvoicesList //////////////////////////////////////////////////////////////*/}
+const [invoicesList, setInvoicesList] = useState([]);
+const [loadingInvoices, setLoadingInvoices] = useState(true);
+ {/**InvoicesList //////////////////////////////////////////////////////////////*/}
+
 
  {/**InventorysList //////////////////////////////////////////////////////////////*/}
   const [InventorysListList, setInventorysListList] = useState([]);
@@ -43,6 +59,119 @@ function AdminDashboard() {
   const [ExpensesList, setExpensesList] = useState([]);
   const [loadingExpenses, setLoadingExpenses] = useState(true);
  {/**ExpensesList //////////////////////////////////////////////////////////////*/}
+
+{/**Fetch & Calculate Stats UseEffect //////////////////////////////////////////////////////*/}
+
+
+useEffect(() => {
+  const fetchDashboardStats = async () => {
+  try {
+    setLoadingStats(true);
+
+    // (Invoices & Employees)
+    const [invoicesRes, employeesData] = await Promise.all([
+      getInvoicesServer().catch(() => ({ data: [], statistics: {} })),
+      getEmployees().catch(() => [])
+    ]);
+
+    const invoices = invoicesRes.data || [];
+    const stats = invoicesRes.statistics || {};
+
+    const pendingInvoices = invoices.filter(inv => inv.status === 'pending' || inv.status === 'انتظار' || inv.status === 'عالقة');
+    
+    const approvedInvoices = invoices.filter(inv => inv.status === 'approved' || inv.status === 'معتمدة');
+
+    const dashboardStats = [
+      {
+        title: "صافي الأرباح المعتمدة",
+        amount: stats.total_profits ? Number(stats.total_profits).toLocaleString('ar-EG') : "0",
+        currency: "ل.س",
+        percentage: stats.profit_growth || "0%+",
+        trend: parseFloat(stats.profit_growth) >= 0 ? "up" : "down"
+      },
+      {
+        title: "فواتير بانتظار الاعتماد",
+        amount: pendingInvoices.length.toString(),
+        currency: "فاتورة",
+        percentage: pendingInvoices.length > 0 ? `${pendingInvoices.length} إجراء معلق` : "مستقر",
+        trend: pendingInvoices.length > 0 ? "neutral" : "up"
+      },
+      {
+        title: "الفواتير المرحّلة بنجاح",
+        amount: approvedInvoices.length.toString(),
+        currency: "عملية",
+        percentage: "جاهزة بالتسويات",
+        trend: "up"
+      },
+      {
+        title: "إجمالي طاقم العمل",
+        amount: employeesData.length.toString(),
+        currency: "موظف",
+        percentage: "نشط حالياً",
+        trend: "up"
+      }
+    ];
+
+    setInformationData(dashboardStats);
+  } catch (err) {
+    console.error("حدث خطأ أثناء إعداد إحصائيات لوحة التحكم:", err);
+  } finally {
+    setLoadingStats(false);
+  }
+};
+
+  fetchDashboardStats();
+}, []);
+{/**🔄 Fetch & Calculate Stats UseEffect //////////////////////////////////////////////////////*/}
+
+
+
+  {/**Employee UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+
+
+useEffect(() => {
+
+ const fetchEmployeesCardData = async () => {
+  try {
+    setLoadingEmployees(true);
+    const data = await getEmployees();
+    setEmployeesList(data || []);
+  } catch (err) {
+    console.error("خطأ أثناء جلب قائمة الموظفين للكارد:", err);
+  } finally {
+    setLoadingEmployees(false);
+  }
+};
+
+  fetchEmployeesCardData();
+}, []);
+  {/**Employee UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+
+
+  {/**Invoices UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
+
+  useEffect(() => {
+    const fetchInvoicesCardData = async () => {
+  try {
+    setLoadingInvoices(true);
+    const res = await getInvoicesServer(); 
+    
+    const approvedInvoices = (res.data || [])
+      .filter(inv => inv.status === 'approved' || inv.status === 'معتمدة')
+      .slice(0, 3); 
+
+    setInvoicesList(approvedInvoices);
+  } catch (err) {
+    console.error("خطأ أثناء جلب فواتير الكارد التلخيصي:", err);
+  } finally {
+    setLoadingInvoices(false);
+  }
+}
+fetchInvoicesCardData();
+},[])
+  {/**Inventory UseEffect and fcuntions //////////////////////////////////////////////////////////////*/
+
+
 
   {/**Inventory UseEffect and fcuntions //////////////////////////////////////////////////////////////*/}
   useEffect(() => {
@@ -175,21 +304,30 @@ fetchInventoryCardData();
             </div>
 
             {/* InformationCard */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <InformationCard InformationData={testinformationData}/>
-            </div>
-
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {loadingStats ? (
+              Array(4).fill(0).map((_, n) => (
+                <div key={n} className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-50 w-full animate-pulse space-y-4">
+                  <div className="h-4 bg-slate-100 rounded w-1/2"></div>
+                  <div className="h-8 bg-slate-200 rounded w-3/4"></div>
+                  <div className="h-6 bg-slate-100 rounded-full w-1/3 mt-2"></div>
+                </div>
+              ))
+            ) : (
+              <InformationCard InformationData={informationData} />
+            )}
+          </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
               
               {/* InvoicesCard */}
               <div className="md:col-span-5">
-                <InvoicesCard invoices={testInvoices} />
+                <InvoicesCard invoices={invoicesList} isLoading={loadingInvoices} />
               </div>
 
               {/* BranchesOverviewCard */}
-              <div className="md:col-span-7">
-                <BranchesOverviewCard BranchCount={12} />
-              </div>
+          <div className="md:col-span-3">
+            <BranchesOverviewCard />
+          </div>
 
               {/* ProductsStateCard - تمرير آمن يحمي الكرت من الـ undefined */}
               <div className="md:col-span-4">
@@ -197,9 +335,9 @@ fetchInventoryCardData();
               </div>
 
               {/* EmployeesMiniCard */}
-              <div className="md:col-span-4">
-                <EmployeesMiniCard EmployeeData={testEmployees}/>
-              </div>
+          <div className="md:col-span-4">
+  <EmployeesMiniCard EmployeeData={employeesList} isLoading={loadingEmployees} />
+</div>
 
               {/* InventoryCard */}
               <div className="md:col-span-4">
@@ -225,5 +363,5 @@ fetchInventoryCardData();
     </div>
   )
 }
-
+}
 export default AdminDashboard;

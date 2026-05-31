@@ -1,8 +1,11 @@
 import { Store, ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-function BranchesOverviewCard({BranchCount} ) {
+function BranchesOverviewCard( ) {
+const navigate = useNavigate();
+
   return (
-    <div className=" cursor-pointer bg-white rounded-[32px] p-8 shadow-sm border border-slate-50 relative group" dir="rtl">
+    <div onClick={()=>{navigate('/Branches')}} className=" cursor-pointer bg-white rounded-[32px] p-8 shadow-sm border border-slate-50 relative group" dir="rtl">
       <ArrowUpRight className="absolute top-6 right-6 text-slate-300 group-hover:text-[#0f172a] cursor-pointer transition-colors" size={24} />
       
       <div className="flex flex-col items-center text-center mt-4">
@@ -10,9 +13,6 @@ function BranchesOverviewCard({BranchCount} ) {
           <Store size={30} />
         </div>
         <h3 className="text-2xl font-black text-[#0f172a] mb-2">الفروع</h3>
-        <p className="text-sm text-slate-400 font-bold leading-relaxed max-w-[200px]">
-          إدارة {BranchCount} فرعاً نشطاً. مراقبة الأداء المباشر لكل موقع.
-        </p>
       </div>
 
       <div className=" grid grid-cols-1 gap-4 mt-10">

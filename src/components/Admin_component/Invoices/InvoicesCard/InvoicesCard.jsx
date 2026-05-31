@@ -14,11 +14,11 @@ function InvoicesCard({ invoices = [] }) {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400"><FileText size={20} /></div>
               <div className="flex flex-col">
-                <span className="text-sm font-black text-[#0f172a] uppercase">{inv.id}</span>
-                <span className="text-[10px] font-bold text-slate-400">{inv.time} - {inv.branch}</span>
+                <span className="text-sm font-black text-[#0f172a] uppercase"><span className=' text-center me-2'>رقم الفاتورة</span>({inv.id})</span>
+                <span className="text-[10px] font-bold text-slate-400">{inv.invoice_date} - {inv.branch}</span>
               </div>
             </div>
-            <div className="text-left font-black text-[#0f172a]">{inv.amount} <span className="text-[10px] text-slate-400 mr-1">ر.س</span></div>
+            <div className="text-left font-black text-[#0f172a]">{inv.total_amount} <span className="text-[10px] text-slate-400 mr-1">ل.س</span></div>
           </div>
         ))}
       </div>
