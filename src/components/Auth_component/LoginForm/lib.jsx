@@ -31,37 +31,69 @@ export const handleAuthSubmit = async ({
         if (isLoginMode) {
             const response = await LoginUser(formData.phone, formData.password);
             
-            // 🌟 السطر السحري: نقوم باستدعاء الدالة لتحديث الـ State محلياً وفي المتصفح معاً
             login(response.user, response.token);
 
-            // (Routing Logic)
             if (response.is_super) {
                 navigate('/ProgramerDashboard');
             } 
             else if (response.role === 'admin') {
                 if (!response.branch_id) {
                     setAlertConfig({ isVisible: true, title: "إعداد مطلوب", description: "يرجى إضافة فرع للمتابعة" });
+                    setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
                     navigate('/Branches');
                 } else if (!response.is_active) {
                     setAlertConfig({ isVisible: true, title: "تفعيل مطلوب", description: response.message });
+                   setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
                     navigate('/ValidateCode');
                 } else {
                     navigate('/AdminDashboard');
+                     setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
                     setAlertConfig({ isVisible: true, title: `${response.user.name} مرحباً بك أيها المدير`, description: response.message });
                 }
             } 
             else if (response.role === 'employee') {
-                if (!response.branch_id) {
-                    setAlertConfig({ isVisible: true, title: "المستخدم غير موجود", description: "هذا الحساب غير مرتبط بفرع" });
+                const user = response.user;
+
+                if (!user || !user.branch_id) {
+                    setAlertConfig({ 
+                        isVisible: true, 
+                        title: "المستخدم غير موجود", 
+                        description: "هذا الحساب غير مرتبط بفرع حالياً" 
+                    });
+                      setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
                     navigate('/Auth');
-                } else if (!response.is_active) {
-                    setAlertConfig({ isVisible: true, title: "اشتراك منتهي", description: "الفرع غير مفعل حالياً" });
-                    navigate('/Auth');
-                } else {
-                    navigate('/EmployeeDashboard');
-                    setAlertConfig({ isVisible: true, title: `${response.user.name} مرحباً بك`, description: response.message });
-                }
+                } 
+            else if (!response.is_active || (user.branch && !user.branch.is_active)) {
+                setAlertConfig({ 
+                    isVisible: true, 
+                    title: "اشتراك منتهي", 
+                    description: "الفرع التابع لك غير مفعل حالياً" 
+                });
+                 setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
+                navigate('/Auth');
+            } 
+            else {
+                navigate('/EmployeeDashboard');
+                setAlertConfig({ 
+                    isVisible: true, 
+                    title: `مرحباً بك ${user.name}`, 
+                    description: response.message || "تم تسجيل الدخول بنجاح" 
+                });
+                  setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
             }
+        }
         } else {
             const data = await RegisterAdmin(formData.name, formData.phone, formData.password);
             
@@ -69,6 +101,9 @@ export const handleAuthSubmit = async ({
             
             navigate('/Branches');
             setAlertConfig({ isVisible: true, title: "تم الإنشاء", description: "يرجى إضافة بيانات فرعك الآن" });
+          setTimeout(() => {
+                    setAlertConfig({ isVisible:false, title: "", description: "" });
+                    }, 3000);
         }
     } catch (error) {
         setAlertConfig({ 
@@ -76,6 +111,9 @@ export const handleAuthSubmit = async ({
             title: "خطأ", 
             description: error.message || "حدث خطأ غير متوقع" 
         });
+          setTimeout(() => {
+         setAlertConfig({ isVisible:false, title: "", description: "" });
+         }, 3000);
     } finally {
         setLoading(false);
     }

@@ -3,11 +3,14 @@ import { NavLink } from 'react-router-dom';
 import { LayoutGrid, BarChart3, BookOpen, ShoppingBag, Package } from 'lucide-react';
 
 function EmployeeSideBar({ isOpen, setIsOpen }) {
+const UserAuth = localStorage.getItem('user');
+const EmpName = UserAuth ? JSON.parse(UserAuth).name : "موظف المبيعات";
+
   const menuItems = [
     { name: 'EmployeeDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
     { name: 'EmployeeProducts', icon: Package, label: 'المنتجات' },
     { name: 'CurrentInvoice', icon: ShoppingBag, label: 'الفاتورة الحالية' },
-    // { name: 'Reports', icon: BarChart3, label: 'التقارير' },
+    { name: 'EmployeeInvoices', icon: BarChart3, label: 'الفواتير' },
   ];
 
   return (
@@ -57,9 +60,11 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
         {/* Footer/User Info  */}
         <div className="p-6 border-t border-slate-50">
            <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#3198c1] rounded-lg flex items-center justify-center text-white font-black text-xs">E</div>
+              <div className="w-8 h-8 bg-[#3198c1] rounded-lg flex items-center justify-center text-white font-black text-xs">
+                {EmpName.trim().charAt(0).toUpperCase()}
+              </div>
               <div className="flex flex-col">
-                <span className="text-xs font-black text-[#0f172a]">موظف المبيعات</span>
+                <span className="text-xs font-black text-[#0f172a]">{EmpName}</span>
               </div>
            </div>
         </div>

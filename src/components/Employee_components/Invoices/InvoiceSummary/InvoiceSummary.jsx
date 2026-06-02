@@ -10,40 +10,44 @@ const InvoiceSummary = ({
   notes, 
   setNotes, 
   totalAmount, 
-  onSubmit 
+  onSubmit,
+  disabled,
+  isExchangeMode,
+  exchangeDetails
 }) => {
-
+  
   const types = [
-    { id: 'sale', label: 'بيع', icon: CreditCard },
-    { id: 'return', label: 'مرتجع', icon: RefreshCw },
-    { id: 'exchange', label: 'تبديل', icon: ArrowLeftRight },
+    { id: 'sale', label: 'بيع مباشرة', icon: CreditCard },
+    { id: 'exchange', label: 'تبديل مقاصي', icon: ArrowLeftRight },
   ];
 
   return (
-    <div className="bg-[#050b1a] rounded-[40px] p-8 shadow-2xl text-white sticky top-8">
+    <div className="bg-[#050b1a] rounded-[40px] p-8 shadow-2xl text-white sticky top-8 text-right">
       <h2 className="text-xl font-black mb-6">إتمام العملية</h2>
       
       {/* Selector */}
-      <div className="flex gap-2 mb-8 bg-white/5 p-2 rounded-2xl">
+      <div className="flex gap-2 mb-8 bg-white/5 p-2 rounded-2xl" dir="rtl">
         {types.map((type) => (
           <button 
             key={type.id}
-            onClick={() => setInvoiceType(type.id)}
-            className={`flex-1 py-3 rounded-xl text-[10px] font-black transition-all ${invoiceType === type.id ? 'bg-[#3198c1] text-white shadow-lg' : 'text-slate-400'}`}
+            type="button"
+            onClick={() => !disabled && setInvoiceType(type.id)}
+            className={`flex-1 py-3 rounded-xl text-[10px] font-black transition-all ${invoiceType === type.id ? 'bg-[#3198c1] text-white shadow-lg' : 'text-slate-400 hover:text-slate-200'}`}
           >
             <type.icon size={14} className="mx-auto mb-1" /> {type.label}
           </button>
         ))}
       </div>
 
-      {invoiceType !== 'sale' && (
+      {(invoiceType === 'return' || invoiceType === 'exchange') && (
         <div className="mb-6 animate-in fade-in slide-in-from-top-2 text-right">
           <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">رقم الفاتورة الأصلية</label>
           <input 
             type="text" 
-            className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] text-right"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] text-right text-white"
             value={originalInvoiceId}
             onChange={(e) => setOriginalInvoiceId(e.target.value)}
+            placeholder="مثال: 1024"
           />
         </div>
       )}
@@ -51,26 +55,51 @@ const InvoiceSummary = ({
       <div className="mb-8 text-right">
         <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">ملاحظات عامة</label>
         <textarea 
-          className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] min-h-[80px] text-right"
+          className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] min-h-[80px] text-right text-white"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
+          placeholder="اكتب أي ملاحظات إضافية هنا..."
         />
       </div>
 
+      {/*exchangeDetails */}
+      {isExchangeMode && exchangeDetails && (
+        <div className="bg-white/5 rounded-2xl p-4 mb-6 space-y-3 text-xs font-bold border border-white/5 animate-in fade-in">
+          <div className="flex justify-between text-emerald-400">
+            <span>إجمالي الموديلات البديلة (+):</span>
+            <span>{exchangeDetails.totalNew?.toLocaleString()} ل.س</span>
+          </div>
+          <div className="flex justify-between text-red-400">
+            <span>إجمالي الموديلات المسترجعة (-):</span>
+            <span>{exchangeDetails.totalReturned?.toLocaleString()} ل.س</span>
+          </div>
+        </div>
+      )}
+
       <div className="border-t border-white/10 pt-6 mb-8">
         <div className="flex justify-between items-center">
-          <span className="text-slate-400 font-bold">المبلغ الإجمالي</span>
+          <span className="text-slate-400 font-bold">
+            {invoiceType === 'exchange' ? 'صافي التسوية (المطالب به)' : 'المبلغ الإجمالي'}
+          </span>
           <div className="text-left">
-            <span className="text-4xl font-black text-white">{totalAmount}</span>
+            <span className={`text-4xl font-black ${totalAmount >= 0 ? 'text-white' : 'text-amber-400'}`}>
+              {totalAmount?.toLocaleString()}
+            </span>
             <span className="text-xs font-black text-[#3198c1] mr-1">ل.س</span>
           </div>
         </div>
+        {invoiceType === 'exchange' && (
+          <p className="text-[10px] text-slate-400 mt-2 text-left font-medium">
+            *{totalAmount > 0 ? "يدفع الزبون الفارق للصندوق" : totalAmount < 0 ? "يتم إرجاع الفارق نقداً للزبون" : "مقاصة متعادلة تماماً"}
+          </p>
+        )}
       </div>
 
       <MyButton 
-        title="تأكيد وإرسال الفاتورة" 
+        title={disabled ? "جاري الحفظ والتدقيق..." : "تأكيد وإرسال الفاتورة"} 
         onClick={onSubmit}
-        className="w-full py-5 bg-white text-[#050b1a] hover:bg-slate-200 shadow-xl"
+        disabled={disabled}
+        className="w-full py-5 bg-white text-[#050b1a] hover:bg-slate-200 shadow-xl disabled:opacity-50 transition-all font-black rounded-2xl"
       />
     </div>
   );

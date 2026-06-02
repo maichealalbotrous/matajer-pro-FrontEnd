@@ -26,6 +26,8 @@ import {AdminLayout} from "@/Layout/AdminSideBar/AdminLayout";
 import EmployeeLayout from "@/Layout/EmployeeSideBar/EmployeeLayout";
 import ValidateCode_page from "@/pages/validateCode/validateCode_page";
 import Branches from "@/components/Branch_component/Branches/Branches";
+import EmployeeManager from "@/components/Admin_component/Employee/EmployeeManager/EmployeeManager";
+import EmployeeInvoicesManager from "@/components/Employee_components/Invoices/EmployeeInvoicesManager/EmployeeInvoicesManager";
 
 export default function AppRoutes() {
   const [cartItems, setCartItems] = useState([]);
@@ -65,6 +67,11 @@ export default function AppRoutes() {
       <Route 
         path="/EmployeeProducts" 
         element={<ProtectedRoute><EmployeeLayout><EmployeeProducts_page /></EmployeeLayout></ProtectedRoute>} 
+      />
+
+      <Route 
+        path="/EmployeeInvoices" 
+        element={<ProtectedRoute><EmployeeLayout><EmployeeInvoicesManager /></EmployeeLayout></ProtectedRoute>} 
       />
 
       <Route 
