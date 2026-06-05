@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutGrid, 
   MapPin, 
@@ -7,10 +7,21 @@ import {
   Key, 
   Settings, 
   LogOut,
-  Code
+  Code,
+  RefreshCw
 } from 'lucide-react';
+import { handleLogoutSubmit } from '@/components/Auth_component/LoginForm/lib';
+import { useAuth } from '@/context/AuthContext/AuthContext';
+import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 
 function ProgrammerSidebar({ isOpen, setIsOpen }) {
+  const navigate = useNavigate();
+  const { logout } = useAuth(); // جلب دالة التطهير المحلي من الـ Context
+  const [isLoggingOut, setIsLoggingOut] = useState(false); // حالة تحميل خاصة بزر تسجيل الخروج
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false); // حالة التحكم بظهور مودال التأكيد المخصص
+
+  const setAlertConfigPlaceholder = () => {};
+
   const menuItems = [
     { name: 'ProgramerDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
     { name: 'ProgramerBranches', icon: MapPin, label: 'الفروع' },
@@ -18,6 +29,17 @@ function ProgrammerSidebar({ isOpen, setIsOpen }) {
     { name: 'subscriptions', icon: Key, label: 'مفاتيح الاشتراك' },
     { name: 'configs', icon: Settings, label: 'إعدادات النظام العامة' },
   ];
+
+  // دالة تُستدعى عند الضغط على زر "نعم، سجل الخروج" داخل المودال المخصص
+  const handleConfirmLogout = () => {
+    setIsConfirmOpen(false); // إغلاق المودال مباشرة
+    handleLogoutSubmit({
+      setLoading: setIsLoggingOut,
+      navigate,
+      logout,
+      setAlertConfig: setAlertConfigPlaceholder
+    });
+  };
 
   return (
     <>
@@ -63,12 +85,42 @@ function ProgrammerSidebar({ isOpen, setIsOpen }) {
 
         {/* Logout Button */}
         <div className="p-8 mt-auto">
-          <button className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-4 rounded-full hover:bg-red-100 transition-all active:scale-95 group">
-             <LogOut size={20} />
-             <span className="text-sm font-black tracking-wide">تسجيل الخروج</span>
+          <button 
+            onClick={() => setIsConfirmOpen(true)} // فتح المودال المخصص الفاخر بدلاً من الـ alert
+            disabled={isLoggingOut}
+            className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-4 rounded-full hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
+          >
+            {isLoggingOut ? (
+              <>
+                <RefreshCw size={18} className="animate-spin text-red-500" />
+                <span className="text-sm font-black tracking-wide">جاري الخروج...</span>
+              </>
+            ) : (
+              <>
+                <LogOut size={20} />
+                <span className="text-sm font-black tracking-wide">تسجيل الخروج</span>
+              </>
+            )}
           </button>
         </div>
       </aside>
+
+      {/* مودال تأكيد الخروج الفاخر والمخصص */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[100] p-4 animate-in fade-in duration-200">
+          <DeleteConfirmView
+            title="تسجيل الخروج من النظام"
+            description="هل أنت متأكد من رغبتك في إنهاء الجلسة الحالية؟ سيتم إبطال صلاحية الدخول وستحتاج لإدخال بياناتك مجدداً لاحقاً."
+            confirmText="نعم، سجل الخروج"
+            processingText="جاري الخروج..."
+            isDeleting={isLoggingOut}
+            variant="danger"
+            icon={LogOut} 
+            onConfirm={handleConfirmLogout}
+            onCancel={() => setIsConfirmOpen(false)}
+          />
+        </div>
+      )}
     </>
   );
 }
