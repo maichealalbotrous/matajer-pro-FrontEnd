@@ -1,10 +1,27 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutGrid, BarChart3, BookOpen, ShoppingBag, Package } from 'lucide-react';
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext/AuthContext';
+import { handleLogoutSubmit } from '@/components/Auth_component/LoginForm/lib';
+import { 
+  LayoutGrid, 
+  BarChart3, 
+  BookOpen, 
+  ShoppingBag, 
+  Package, 
+  LogOut, 
+  RefreshCw 
+} from 'lucide-react';
 
 function EmployeeSideBar({ isOpen, setIsOpen }) {
-const UserAuth = localStorage.getItem('user');
-const EmpName = UserAuth ? JSON.parse(UserAuth).name : "موظف المبيعات";
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false); 
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false); 
+
+  const UserAuth = localStorage.getItem('user');
+  const EmpName = UserAuth ? JSON.parse(UserAuth).name : "موظف المبيعات";
+
+  const setAlertConfigPlaceholder = () => {};
 
   const menuItems = [
     { name: 'EmployeeDashboard', icon: LayoutGrid, label: 'لوحة التحكم' },
@@ -12,6 +29,16 @@ const EmpName = UserAuth ? JSON.parse(UserAuth).name : "موظف المبيعا�
     { name: 'CurrentInvoice', icon: ShoppingBag, label: 'الفاتورة الحالية' },
     { name: 'EmployeeInvoices', icon: BarChart3, label: 'الفواتير' },
   ];
+
+  const handleConfirmLogout = () => {
+    setIsConfirmOpen(false); // إغلاق المودال
+    handleLogoutSubmit({
+      setLoading: setIsLoggingOut,
+      navigate,
+      logout,
+      setAlertConfig: setAlertConfigPlaceholder
+    });
+  };
 
   return (
     <>
@@ -50,15 +77,16 @@ const EmpName = UserAuth ? JSON.parse(UserAuth).name : "موظف المبيعا�
               `}
             >
               <div className="flex items-center gap-3">
-                 <item.icon className={`w-5 h-5 transition-colors`} />
+                 <item.icon className="w-5 h-5 transition-colors" />
                  <span className="text-sm font-black">{item.label}</span>
               </div>
             </NavLink>
           ))}
         </nav>
 
-        {/* Footer/User Info  */}
-        <div className="p-6 border-t border-slate-50">
+        {/* Footer/User Info & Logout Button */}
+        <div className="p-6 border-t border-slate-50 space-y-3">
+           {/* بطاقة معلومات الموظف */}
            <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
               <div className="w-8 h-8 bg-[#3198c1] rounded-lg flex items-center justify-center text-white font-black text-xs">
                 {EmpName.trim().charAt(0).toUpperCase()}
@@ -67,8 +95,44 @@ const EmpName = UserAuth ? JSON.parse(UserAuth).name : "موظف المبيعا�
                 <span className="text-xs font-black text-[#0f172a]">{EmpName}</span>
               </div>
            </div>
+
+           {/* كبسة تسجيل الخروج */}
+           <button 
+            onClick={() => setIsConfirmOpen(true)} 
+            disabled={isLoggingOut}
+            className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-3.5 rounded-2xl hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
+          >
+            {isLoggingOut ? (
+              <>
+                <RefreshCw size={16} className="animate-spin text-red-500" />
+                <span className="text-xs font-black tracking-wide">جاري الخروج...</span>
+              </>
+            ) : (
+              <>
+                <LogOut size={16} />
+                <span className="text-xs font-black tracking-wide">تسجيل الخروج</span>
+              </>
+            )}
+          </button>
         </div>
       </aside>
+
+      {/* مودال تأكيد الخروج الفاخر والمخصص */}
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[100] p-4 animate-in fade-in duration-200">
+          <DeleteConfirmView
+            title="تسجيل الخروج من النظام"
+            description="هل أنت متأكد من رغبتك في إنهاء الجلسة الحالية؟ سيتم إبطال صلاحية الدخول وستحتاج لإدخال بياناتك مجدداً لاحقاً."
+            confirmText="نعم، سجل الخروج"
+            processingText="جاري الخروج..."
+            isDeleting={isLoggingOut}
+            variant="danger"
+            icon={LogOut} 
+            onConfirm={handleConfirmLogout}
+            onCancel={() => setIsConfirmOpen(false)}
+          />
+        </div>
+      )}
     </>
   );
 }
