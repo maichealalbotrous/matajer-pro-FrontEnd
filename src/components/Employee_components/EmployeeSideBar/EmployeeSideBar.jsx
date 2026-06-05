@@ -11,6 +11,7 @@ import {
   LogOut, 
   RefreshCw 
 } from 'lucide-react';
+import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 
 function EmployeeSideBar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
