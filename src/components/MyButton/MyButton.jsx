@@ -5,9 +5,9 @@ function MyButton({ title, position, className, onClick, ...props }) {
     <button 
       onClick={onClick}
       className={`
-      w-full 
-        h-14 
     
+        h-14 
+        w-full
         font-bold 
         text-lg 
         rounded-2xl 

@@ -1,11 +1,66 @@
 import React from 'react';
 import { Wallet, Key, LayoutGrid } from 'lucide-react';
-import {defaultStats} from './lib';
-const StatCard = () => {
+
+const StatCard = ({ Data = [], isLoading }) => {
+  
+  // حساب الإحصائيات من البيانات القادمة من السيرفر بشكل ديناميكي
+  const totalRevenue = Data.reduce((sum, item) => sum + (Number(item.revenue) || 0), 0);
+  const activeKeysCount = Data.filter(item => item.status === 'active').length;
+  const totalBranches = Data.length;
+
+  // بناء هيكل الكروت الثلاثة
+  const statsItems = [
+    {
+      title: "إجمالي الإيرادات",
+      value: totalRevenue.toLocaleString(),
+      unit: "ل.س",
+      subValue: "مجموع الاشتراكات المحصلة",
+      trend: 12,
+      icon: Wallet,
+      colorClass: "bg-blue-50 text-[#3198c1]"
+    },
+    {
+      title: "المفاتيح النشطة",
+      value: activeKeysCount,
+      unit: "مفتاح",
+      subValue: `من أصل ${totalBranches} فروع مفعلة`,
+      trend: null,
+      icon: Key,
+      colorClass: "bg-green-50 text-green-600"
+    },
+    {
+      title: "الفروع المسجلة",
+      value: totalBranches,
+      unit: "فرع",
+      subValue: "إجمالي الفروع على النظام",
+      trend: null,
+      icon: LayoutGrid,
+      colorClass: "bg-purple-50 text-purple-600"
+    }
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full" dir="rtl">
+        {[1, 2, 3].map((idx) => (
+          <div key={idx} className="bg-white p-6 rounded-[35px] border border-slate-100 h-44 animate-pulse flex flex-col justify-between">
+            <div className="flex justify-between items-start">
+              <div className="h-4 bg-slate-100 rounded-md w-24" />
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-8 bg-slate-100 rounded-md w-20" />
+              <div className="h-3 bg-slate-100 rounded-md w-32" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full" dir="rtl">
-      {defaultStats.map((item, index) => (
+      {statsItems.map((item, index) => (
         <div 
           key={index} 
           className="bg-white p-6 rounded-[35px] border border-slate-100 shadow-sm flex flex-col justify-between h-44 hover:shadow-md transition-shadow"
