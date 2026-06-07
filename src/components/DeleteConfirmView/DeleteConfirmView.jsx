@@ -16,7 +16,7 @@ const DeleteConfirmView = ({
   const isDanger = variant === "danger";
 
   return (
-    <div className="flex flex-col justify-between h-full animate-in fade-in slide-in-from-bottom-4 flex-1 p-6 bg-[#050b1a] rounded-[32px] max-w-sm mx-auto text-white">
+    <div className="flex flex-col justify-between h-fit  animate-in fade-in slide-in-from-bottom-4 flex-1 p-14 bg-[#050b1a] rounded-[32px] max-w-sm mx-auto text-white">
       <div className="space-y-2 text-right" dir="rtl">
         <div className={`flex items-center gap-2 ${isDanger ? 'text-red-500' : 'text-green-400'}`}>
           {Icon && <Icon size={20} />}
