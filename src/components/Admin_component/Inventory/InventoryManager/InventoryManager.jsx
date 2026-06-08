@@ -3,12 +3,13 @@ import { Search, Filter } from 'lucide-react';
 import InventoryStats from '../InventoryStats/InventoryStats';
 import MyInput from '@/components/MyInput/MyInput';
 import InventoryItemCard from '../InventoryItemCard/InventoryItemCard';
-import { getInventoryAuditFromServer } from './lib';
+import { getInventoryAuditFromServer } from './lib'; 
 
 function InventoryManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [debouncedSearch, setDebouncedSearch] = useState(''); 
   
   const [inventoryData, setInventoryData] = useState({
     statistics: { total_inventory_cost: 0, total_inventory_market: 0, potential_profit: 0 },
@@ -16,55 +17,86 @@ function InventoryManager() {
   });
 
   useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
     const fetchInventory = async () => {
       try {
         setLoading(true);
-        const res = await getInventoryAuditFromServer();
+        setError(null);
+
+        const filters = {};
+        if (debouncedSearch.trim() !== '') {
+          filters.search = debouncedSearch.trim();
+        }
+
+        const res = await getInventoryAuditFromServer(filters);
+        
         if (res.success) {
+          const safeItems = (res.items || []).map(item => ({
+            ...item,
+            sizes: item.sizes || item.sizes_details || [] 
+          }));
+
           setInventoryData({
-            statistics: res.statistics,
-            items: res.items
+            statistics: res.statistics || { total_inventory_cost: 0, total_inventory_market: 0, potential_profit: 0 },
+            items: safeItems
           });
         }
       } catch (err) {
-        setError(err.message || "حدث خطأ أثناء تحميل بيانات الجرد المالي.");
+        setError(err.message || "حدث خطأ أثناء تحميل بيانات الجرد المالي من السيرفر.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchInventory();
-  }, []);
+  }, [debouncedSearch]); 
 
-  const filteredItems  = inventoryData.items
+  const filteredItems = inventoryData.items;
 
   return (
     <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-10" dir="rtl">
       
+      {/* header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-black text-[#0f172a]">جرد المخزون التفصيلي</h1>
       </div>
 
       <InventoryStats stats={inventoryData.statistics} />
 
-      {/* <div className="flex flex-col md:flex-row gap-4 items-end">
-        <div className="flex-1">
+      {/* search*/}
+      <div className="flex flex-col md:flex-row gap-4 items-end">
+        <div className="flex-1 w-full">
           <MyInput 
-            placeholder="بحث عن منتج أو موديل..." 
+            placeholder="بحث مباشر في السيرفر عن منتج، موديل، لون أو كود SKU..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             Icon={<Search size={20} />} 
           />
         </div>
-        <button className="h-14 bg-white px-8 rounded-[24px] border border-slate-100 flex items-center gap-2 font-black text-sm text-[#0f172a] hover:bg-slate-50 transition-colors">
-          <Filter size={18} /> تصفية المنتجات
+        <button className="h-14 bg-white px-8 rounded-[24px] border border-slate-100 flex items-center gap-2 font-black text-sm text-[#0f172a] hover:bg-slate-50 transition-colors whitespace-nowrap">
+          <Filter size={18} /> تصفية المخزون
         </button>
-      </div> */}
+      </div>
 
       {loading ? (
-        <div className="py-20 text-center font-black text-slate-400 animate-pulse">جاري جرد المخزون وحساب الأصول الحالية...</div>
+        <div className="py-20 text-center font-black text-slate-400 animate-pulse">
+          جاري جرد المخزون وحساب الأصول الحالية من السيرفر...
+        </div>
       ) : error ? (
-        <div className="p-6 text-center bg-red-50 text-red-600 rounded-[24px] font-bold">{error}</div>
+        <div className="p-6 text-center bg-red-50 text-red-600 rounded-[24px] font-bold">
+          {error}
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <div className="py-20 text-center bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
+          <p className="font-black text-slate-400 text-sm">السيرفر لم يعثر على أية منتجات مطابقة لعنوان البحث الحالي.</p>
+        </div>
       ) : (
         <InventoryItemCard items={filteredItems} />
       )}

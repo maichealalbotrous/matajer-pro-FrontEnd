@@ -331,7 +331,7 @@ fetchInventoryCardData();
 
               {/* ProductsStateCard - تمرير آمن يحمي الكرت من الـ undefined */}
               <div className="md:col-span-4">
-                <ProductsStateCard ProductsData={productsList && productsList.length > 0 ? productsList[0] : null} />
+                <ProductsStateCard ProductsData={productsList && productsList.length > 0 ? productsList[0] : []} isLoading={Loading} />
               </div>
 
               {/* EmployeesMiniCard */}
