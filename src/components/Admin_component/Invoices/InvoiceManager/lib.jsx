@@ -41,6 +41,16 @@ export const approveInvoiceServer = async (invoiceId) => {
   }
 };
 
+// 4. approveAllInvoices -
+export const approveAllInvoicesServer = async () => {
+  try {
+    const response = await invoiceApi.post('/approve-all');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "حدث خطأ غير متوقع أثناء محاولة اعتماد الفواتير معاً." };
+  }
+};
+
 // 4. revertInvoiceApproval
 export const revertInvoiceApprovalServer = async (invoiceId) => {
    try {

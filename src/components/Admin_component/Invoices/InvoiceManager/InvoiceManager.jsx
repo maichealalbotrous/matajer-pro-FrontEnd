@@ -3,12 +3,13 @@ import InvoiceStats from '../InvoiceStats/InvoiceStats';
 import InvoiceList from '../InvoiceList/InvoiceList';
 import InvoiceDetailModal from '../InvoiceDetailModal/InvoiceDetailModal';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { CheckCircle, RotateCcw } from 'lucide-react'; 
+import { CheckCircle, RotateCcw, CheckSquare } from 'lucide-react'; 
 import { 
   getInvoicesServer, 
   showInvoiceDetailsServer, 
   approveInvoiceServer, 
-  revertInvoiceApprovalServer 
+  revertInvoiceApprovalServer,
+  approveAllInvoicesServer 
 } from './lib';
 import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 import Public_Alert from '@/components/public_Alert/Public_Alert';
@@ -27,7 +28,7 @@ function InvoiceManager() {
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     invoiceId: null,
-    type: "approve", // approve or revert
+    type: "approve", // approve, revert, or approve_all
     isProcessing: false
   });
 
@@ -74,6 +75,11 @@ function InvoiceManager() {
     setConfirmModal({ isOpen: true, invoiceId: id, type: "revert", isProcessing: false });
   };
 
+  // 💡 تفعيل وضع اعتماد الكل المجمع
+  const handleApproveAllClick = () => {
+    setConfirmModal({ isOpen: true, invoiceId: null, type: "approve_all", isProcessing: false });
+  };
+
   const handleExecuteAction = async () => {
     const { invoiceId, type } = confirmModal;
     try {
@@ -83,6 +89,13 @@ function InvoiceManager() {
         const res = await approveInvoiceServer(invoiceId);
         setConfirmModal({ isOpen: false, invoiceId: null, type: "approve", isProcessing: false });
         triggerToast("تم الاعتماد بنجاح", res?.message || `تم الاعتماد المالي للفاتورة #${invoiceId} وترحيلها بالتسويات.`);
+      
+      } else if (type === "approve_all") {
+
+        const res = await approveAllInvoicesServer();
+        setConfirmModal({ isOpen: false, invoiceId: null, type: "approve", isProcessing: false });
+        triggerToast("تم اعتماد الكل", res?.message || "تم الاعتماد المالي الجماعي لجميع الفواتير المعلقة بنجاح.");
+      
       } else {
         const res = await revertInvoiceApprovalServer(invoiceId);
         setConfirmModal({ isOpen: false, invoiceId: null, type: "approve", isProcessing: false });
@@ -92,9 +105,7 @@ function InvoiceManager() {
       await fetchInvoicesData();
     } catch (err) {
       setConfirmModal(prev => ({ ...prev, isProcessing: false }));
-      
       const serverErrorMessage = err.error || err.message || "فشلت معالجة الطلب، يرجى المحاولة مرة أخرى.";
-      
       setConfirmModal({ isOpen: false, invoiceId: null, type: "approve", isProcessing: false });
       triggerToast("فشل تنفيذ الإجراء", serverErrorMessage);
     }
@@ -108,6 +119,9 @@ function InvoiceManager() {
     );
   }
 
+  // فحص ديناميكي لرؤية ما إذا كان الفرع يحتوي على فواتير معلقة حالياً لتمكين الزر أو تعطيله
+  const hasPendingInvoices = invoices.some(inv => inv.status === 'pending');
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 relative" dir="rtl">
       
@@ -118,6 +132,20 @@ function InvoiceManager() {
             متابعة واعتماد الفواتير الصادرة من الفروع
           </p>
         </div>
+
+        {/* 💡 كبسة اعتماد جميع الفواتير الجديدة المتناسقة مع واجهة التابلت والموبايل */}
+        <button
+          onClick={handleApproveAllClick}
+          disabled={!hasPendingInvoices || loading}
+          className={`h-12 px-6 rounded-2xl flex items-center gap-2 font-black text-sm transition-all shadow-sm ${
+            !hasPendingInvoices 
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none' 
+              : 'bg-[#0f172a] text-white hover:bg-[#1e293b]'
+          }`}
+        >
+          <CheckSquare size={18} />
+          اعتماد جميع الفواتير
+        </button>
       </div>
 
       {error && (
@@ -156,7 +184,9 @@ function InvoiceManager() {
           
           <div className="sr-only">
             <DialogTitle>
-              {confirmModal.type === "approve" ? "تأكيد الاعتماد المالي" : "التراجع عن الاعتماد المالي"}
+              {confirmModal.type === "approve" && "تأكيد الاعتماد المالي"}
+              {confirmModal.type === "approve_all" && "اعتماد شامل لجميع الفواتير"}
+              {confirmModal.type === "revert" && "التراجع عن الاعتماد المالي"}
             </DialogTitle>
             <DialogDescription>
               شاشة منبثقة لتأكيد وتوثيق العمليات المالية الحساسة على الفواتير.
@@ -171,6 +201,19 @@ function InvoiceManager() {
               processingText="جاري الاعتماد المالي..."
               variant="success"
               icon={CheckCircle}
+              isDeleting={confirmModal.isProcessing}
+              onConfirm={handleExecuteAction}
+              onCancel={() => setConfirmModal({ isOpen: false, invoiceId: null, type: "approve", isProcessing: false })}
+            />
+          ) : confirmModal.type === "approve_all" ? (
+            /* 💡 شاشة تأكيد الاعتماد الجماعي الشاملة لحماية البيانات المجمعة */
+            <DeleteConfirmView 
+              title="اعتماد كافة الفواتير معاً"
+              description="هل أنت متأكد من رغبتك في ترحيل واعتماد جميع الفواتير المعلقة حالياً دفعة واحدة؟ هذا الإجراء سيقوم باحتساب وحقن الأرباح الصافية لكل الفروع بشكل آلي تماماً."
+              confirmText="نعم، اعتمد كل المعلق"
+              processingText="جاري الترحيل الجماعي الأوتوماتيكي..."
+              variant="success"
+              icon={CheckSquare}
               isDeleting={confirmModal.isProcessing}
               onConfirm={handleExecuteAction}
               onCancel={() => setConfirmModal({ isOpen: false, invoiceId: null, type: "approve", isProcessing: false })}
