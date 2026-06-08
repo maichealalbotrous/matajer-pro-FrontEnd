@@ -75,20 +75,20 @@ useEffect(() => {
     ]);
 
     const invoices = invoicesRes.data || [];
-    const stats = invoicesRes.statistics || {};
+    // const stats = invoicesRes.statistics || {};
 
     const pendingInvoices = invoices.filter(inv => inv.status === 'pending' || inv.status === 'انتظار' || inv.status === 'عالقة');
     
     const approvedInvoices = invoices.filter(inv => inv.status === 'approved' || inv.status === 'معتمدة');
 
     const dashboardStats = [
-      {
-        title: "صافي الأرباح المعتمدة",
-        amount: stats.total_profits ? Number(stats.total_profits).toLocaleString('ar-EG') : "0",
-        currency: "ل.س",
-        percentage: stats.profit_growth || "0%+",
-        trend: parseFloat(stats.profit_growth) >= 0 ? "up" : "down"
-      },
+      // {
+      //   title: "صافي الأرباح المعتمدة",
+      //   amount: stats.total_profits ? Number(stats.total_profits).toLocaleString('ar-EG') : "0",
+      //   currency: "ل.س",
+      //   percentage: stats.summary.net_profit || "0%+",
+      //   trend: parseFloat(stats.net_profit) >= 0 ? "up" : "down"
+      // },
       {
         title: "فواتير بانتظار الاعتماد",
         amount: pendingInvoices.length.toString(),
@@ -305,17 +305,9 @@ fetchInventoryCardData();
 
             {/* InformationCard */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-            {loadingStats ? (
-              Array(4).fill(0).map((_, n) => (
-                <div key={n} className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-50 w-full animate-pulse space-y-4">
-                  <div className="h-4 bg-slate-100 rounded w-1/2"></div>
-                  <div className="h-8 bg-slate-200 rounded w-3/4"></div>
-                  <div className="h-6 bg-slate-100 rounded-full w-1/3 mt-2"></div>
-                </div>
-              ))
-            ) : (
-              <InformationCard InformationData={informationData} />
-            )}
+         
+              <InformationCard InformationData={informationData} isLoding={loadingStats} />
+            
           </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
               

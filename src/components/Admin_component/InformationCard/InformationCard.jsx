@@ -1,7 +1,19 @@
 import React from 'react'
 import { TrendingUp } from 'lucide-react' 
 
-function InformationCard({ InformationData = [] }) {
+function InformationCard({ InformationData = [] , isLoding }) {
+
+  
+  if (InformationData === undefined || InformationData === null || isLoding) {
+    return (
+      Array.from({ length: 3 }).map(() => (
+      <div className="block bg-white rounded-[32px] p-8 shadow-sm border border-slate-50 min-h-[160px] animate-pulse" dir="rtl">
+        <div className="h-4 bg-slate-100 rounded w-1/2 mb-4"></div>
+        <div className="h-8 bg-slate-100 rounded w-1/3 mt-auto align-bottom"></div>
+      </div>
+      )));
+  }
+
   return (
     <>
       {InformationData.map((ele, index) => (
