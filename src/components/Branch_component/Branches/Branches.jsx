@@ -1,17 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, X, RefreshCw } from 'lucide-react';
-
 import { fetchBranchesFromServer } from '../Branch_card/lib';
 import BranchCard from '../Branch_card/BranchCard';
 import AddBranchForm from '../AddBranchForm/AddBranchForm';
 import BranchHeader from '../Branch_Header/BranchHeader';
 import { useNavigate } from 'react-router-dom';
+
 function Branches() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [branchesList, setBranchesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+
+  // 💡 دالة فحص صلاحية إظهار زر "إضافة فرع جديد" بأمان تام
+  const canAddBranch = () => {
+    try {
+      const userRaw = localStorage.getItem('user');
+      if (!userRaw) return false; // إذا لم يكن هناك مستخدم مسجل
+      
+      const userObj = JSON.parse(userRaw);
+      // التحقق من أن للمستخدم صلاحية (مثلاً branch_id الخاص به يساوي null كمدير عام، أو حسب منطق تطبيقك)
+      return userObj && (!userObj.branch_id || userObj.branch_id === null);  
+      }
+       catch (error) {
+      console.error("خطأ في قراءة بيانات المستخدم من local storage:", error);
+      return false;
+    }
+  };
+
   const loadBranchesData = async () => {
     setLoading(true);
     setErrorMessage('');
@@ -34,7 +51,7 @@ function Branches() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#f8fafc]"> 
+    <div className="relative min-h-screen bg-[#f8fafc]" dir="rtl"> 
       <BranchHeader />
       
       <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center mt-8">
@@ -46,16 +63,19 @@ function Branches() {
           <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
         </button>
 
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-6 py-3.5 bg-[#050b1a] hover:bg-[#0a1429] text-white font-black text-sm rounded-2xl shadow-lg shadow-black/5 transition-all active:scale-[0.98]"
-        >
-          <Plus size={18} />
-          <span>إضافة فرع جديد</span>
-        </button>
+        {/* 💡 استخدام الدالة الآمنة بعد فك كائن الـ JSON لمنع الـ Crash */}
+        {canAddBranch() && (
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 px-6 py-3.5 bg-[#050b1a] hover:bg-[#0a1429] text-white font-black text-sm rounded-2xl shadow-lg shadow-black/5 transition-all active:scale-[0.98]"
+          >
+            <Plus size={18} />
+            <span>إضافة فرع جديد</span>
+          </button>
+        )}
       </div>
 
-      <div className="max-w-7xl mx-auto min-h-[200px]">
+      <div className="max-w-7xl mx-auto min-h-[200px] mt-6 px-6 md:px-12">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#0f172a]"></div>
@@ -66,7 +86,7 @@ function Branches() {
             <button onClick={loadBranchesData} className="text-xs font-black text-[#3198c1] underline">إعادة المحاولة</button>
           </div>
         ) : (
-          <BranchCard onClick={()=>{navigate('/AdminDashboard')}} BrachData={branchesList} Employee={[]} />
+          <BranchCard onClick={() => { navigate('/AdminDashboard') }} BrachData={branchesList} Employee={[]} />
         )}
       </div>
 
