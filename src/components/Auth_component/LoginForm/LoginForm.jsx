@@ -59,7 +59,7 @@ const onSubmit = (e) => {
             {isLoginMode ? "تسجيل الدخول" : "إنشاء حساب"}
           </CardTitle>
           <CardDescription className="text-slate-400 font-bold text-sm">
-            {isLoginMode ? "مرحباً بك مجدداً، يرجى إدخال بياناتك" : "ابدأ رحلتك معنا بإعداد حسابك الشخصي"}
+            {isLoginMode ? "مرحباً بك مجدداً، يرجى إدخال بياناتك (ملاحظة هذا الخيار مخصص للمدير والموظف)" : "ابدأ رحلتك معنا بإعداد حسابك الشخصي (ملاحظة هذا الخيار مخصص فقط للمدير صاحب الفرع)"}
           </CardDescription>
         </CardHeader>
 
