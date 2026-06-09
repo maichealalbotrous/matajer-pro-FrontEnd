@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 export const AdminLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
-
-const [userData, setUserData] = useState({ name: "جاري التحميل...", role: "مستخدِم" });
+  const [userData, setUserData] = useState({ name: "جاري التحميل...", role: "مستخدِم" });
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -19,30 +18,24 @@ const [userData, setUserData] = useState({ name: "جاري التحميل...", r
   }, []);
 
   return (
-    <div className="flex h-screen bg-[#fcfcfc] " dir="rtl">
-  
-      {isMenuOpen && (
-        <div className="hidden md:block w-72 h-full shrink-0 border-l border-slate-100 shadow-sm">
-          <SideBarDashboard isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
-        </div>
-      )}
+    <div className="flex h-screen max-h-screen w-screen bg-[#fcfcfc] overflow-hidden fixed inset-0" dir="rtl">
+      
+      <SideBarDashboard isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
 
-      <div className="md:hidden">
-         <SideBarDashboard isOpen={isMenuOpen} setIsOpen={setIsMenuOpen} />
-      </div>
-
-      <div className="flex-1 flex flex-col min-w-0 h-full">
+      <div className="flex-1 flex flex-col min-w-0 h-full max-h-screen overflow-hidden">
+        
         <HeaderDashboard 
           onMenuClick={() => setIsMenuOpen(!isMenuOpen)} 
           isOpen={isMenuOpen} 
           Data={userData}
         />
         
-        <main className=" flex-1   bg-[#f8fafc] p-4 md:p-8 lg:p-10">
-          <div className="max-w-[1600px] mx-auto">
+        <main className="flex-1 bg-[#f8fafc] p-4 md:p-8 lg:p-10 overflow-y-auto min-h-0">
+          <div className="max-w-[1600px] mx-auto pb-10"> 
             {children}
           </div>
         </main>
+
       </div>
     </div>
   );

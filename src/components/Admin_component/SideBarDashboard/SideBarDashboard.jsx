@@ -6,11 +6,12 @@ import { handleLogoutSubmit } from '@/components/Auth_component/LoginForm/lib';
 import { 
   LayoutGrid, 
   ShoppingBag, 
-  Package, 
+  Package,   
   BarChart3, 
   LogOut,
   BookOpen, 
-  RefreshCw 
+  RefreshCw, 
+  EyeClosed 
 } from 'lucide-react';
 import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 
@@ -29,9 +30,8 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
     { name: 'Reports', icon: BarChart3, label: 'التقارير' },
   ];
 
-  // دالة تُستدعى عند تأكيد تسجيل الخروج من داخل المودال
   const handleConfirmLogout = () => {
-    setIsConfirmOpen(false); // إغلاق المودال
+    setIsConfirmOpen(false); 
     handleLogoutSubmit({
       setLoading: setIsLoggingOut,
       navigate,
@@ -40,7 +40,7 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
     });
   };
 
-  return (
+ return (
     <>
       {/* Overlay للموبايل */}
       {isOpen && (
@@ -50,12 +50,19 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
         />
       )}
 
-      {/* Aside Container */}
-      <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'} md:relative md:flex`} dir="rtl">
+      {isOpen && <div className="hidden md:block w-72 flex-shrink-0 transition-all duration-300" />}
+
+      <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`} dir="rtl">
         
+        {!isOpen && (
+          <div className="absolute top-4 left-4 cursor-pointer text-slate-400 hover:text-[#0f172a] transition-colors z-50">
+            <EyeClosed onClick={() => setIsOpen(true)} size={20} />
+          </div>
+        )}
+
         {/* Header */}
-        <div className="p-8 flex items-center gap-3">
+        <div className="p-8 flex items-center gap-3 flex-shrink-0">
           <div className="w-10 h-10 bg-[#050b1a] rounded-xl flex items-center justify-center shadow-lg shadow-black/20 text-white">
             <BookOpen size={22} />
           </div>
@@ -71,6 +78,9 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             <NavLink
               key={item.name}
               to={`/${item.name}`} 
+              onClick={() => {
+                if (window.innerWidth < 768) setIsOpen(false);
+              }} 
               className={({ isActive }) => `
                 cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
                 ${isActive ? 'bg-slate-50 text-[#0f172a] shadow-sm' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
@@ -83,9 +93,9 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-8 mt-auto">
+        <div className="p-8 mt-auto flex-shrink-0">
           <button 
-            onClick={() => setIsConfirmOpen(true)} // فتح المودال الفاخر عند الضغط
+            onClick={() => setIsConfirmOpen(true)} 
             disabled={isLoggingOut}
             className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-4 rounded-full hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
           >
@@ -104,7 +114,7 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
         </div>
       </aside>
 
-      {/* مودال تأكيد الخروج الفاخر والمخصص */}
+      {/* مودال تأكيد الخروج */}
       {isConfirmOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[100] p-4 animate-in fade-in duration-200">
           <DeleteConfirmView
@@ -114,7 +124,7 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             processingText="جاري الخروج..."
             isDeleting={isLoggingOut}
             variant="danger"
-            icon={LogOut} // تمرير أيقونة الباب بدلاً من أيقونة السلة التلقائية
+            icon={LogOut} 
             onConfirm={handleConfirmLogout}
             onCancel={() => setIsConfirmOpen(false)}
           />

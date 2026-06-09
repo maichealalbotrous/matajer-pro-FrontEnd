@@ -293,7 +293,7 @@ fetchInventoryCardData();
 
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] overflow-hidden" dir="rtl">
+    <div className="flex  bg-[#f8fafc] overflow-hidden" dir="rtl">
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 transition-all duration-300">
           <div className="max-w-7xl mx-auto space-y-10">
