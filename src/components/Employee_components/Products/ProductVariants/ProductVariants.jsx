@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronRight, Info } from 'lucide-react';
+import { ChevronRight, Info, Search, X } from 'lucide-react';
 import SuccessAlert from '@/components/SuccessAlert/SuccessAlert';
 import MyInput from '@/components/MyInput/MyInput';
 import MyButton from '@/components/MyButton/MyButton';
@@ -14,6 +14,9 @@ const ProductVariants = ({ addToInvoice }) => {
   const [variants, setVariants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
   const [selectedSizeVariant, setSelectedSizeVariant] = useState(null);
   const [parentVariant, setParentVariant] = useState(null);
   
@@ -25,16 +28,36 @@ const ProductVariants = ({ addToInvoice }) => {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  // 💡 تفصيل (Debounce) ناعم لمنع استهلاك ريكويستات السيرفر أثناء الكتابة السريعة
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 400); // إرسال الطلب بعد 400 ملي ثانية من التوقف عن الكتابة
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // 💡 تحديث الجلب المباشر ليشمل كلاً من معرّف المنتج والكلمة المفتاحية للبحث
   useEffect(() => {
     const fetchLiveVariants = async () => {
       try {
         setIsLoading(true);
         setErrorMessage("");
-        const data = await getVariantsserver({ product_id: Number(productId) });
+        
+        // تجهيز الفلاتر الموجهة للسيرفر
+        const backendFilters = { 
+          product_id: Number(productId) 
+        };
+        
+        // إذا كتب المستخدم نصاً، نرسله مباشرة مع طلب التصفية للدالة
+        if (debouncedQuery.trim() !== "") {
+          backendFilters.search = debouncedQuery.trim(); // أو استبدل الحقل بالاسم المتوقع في الـ API الخاص بك (مثلاً keyword أو sku)
+        }
+
+        const data = await getVariantsserver(backendFilters);
         setVariants(data);
       } catch (err) {
         console.error("خطأ جلب البيانات:", err);
-        setErrorMessage(err.error || err.message || "فشل الاتصال بالسيرفر لجلب الموديلات الحالية.");
+        setErrorMessage(err.error || err.message || "فشل الاتصال بالسيرفر لجلب الموديلات المطابقة.");
       } finally {
         setIsLoading(false);
       }
@@ -43,7 +66,7 @@ const ProductVariants = ({ addToInvoice }) => {
     if (productId) {
       fetchLiveVariants();
     }
-  }, [productId]);
+  }, [productId, debouncedQuery]); // يتم إعادة الاستدعاء تلقائياً عند تغيير المنتج أو كلمة البحث
 
   const handleSelectSize = (parent, sizeObj) => {
     setSelectedSizeVariant(sizeObj);
@@ -76,7 +99,6 @@ const ProductVariants = ({ addToInvoice }) => {
 
     const newItem = {
       variant_id: selectedSizeVariant.id,
-      // تـصحيح: حـوّلنا الحقل إلى variant_name ليتوافق مع شاشة السلة الحالية
       variant_name: `${parentVariant.variant_name || ''} (${parentVariant.color || ''}) - قياس ${selectedSizeVariant.size}`,
       sku: selectedSizeVariant.sku,
       size: selectedSizeVariant.size,
@@ -115,8 +137,32 @@ const ProductVariants = ({ addToInvoice }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
+        {/* الجزء الأيمن: القائمة وحقل البحث الجديد */}
         <div className="lg:col-span-7 space-y-6 text-right">
-          <h2 className="text-lg font-black text-slate-500 mr-2">الموديلات والأحجام المتوفرة بالمخزن</h2>
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mr-2">
+            <h2 className="text-lg font-black text-slate-500">الموديلات والأحجام المتوفرة بالمخزن</h2>
+            
+            {/* 💡 شريط البحث الجديد الفاخر */}
+            <div className="relative w-full sm:w-72">
+              <input
+                type="text"
+                placeholder="ابحث برقم الـ SKU، المقاس أو اللون..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white border border-slate-200 rounded-2xl py-3 pr-11 pl-4 text-xs font-bold outline-none focus:border-[#3198c1] focus:ring-4 focus:ring-[#3198c1]/10 transition-all text-slate-700 placeholder:text-slate-400"
+              />
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery("")}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-all"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
           
           <div className="space-y-6">
             {isLoading ? (
@@ -165,13 +211,13 @@ const ProductVariants = ({ addToInvoice }) => {
               ))
             ) : (
               <div className="py-16 text-center text-slate-400 font-bold bg-white rounded-[40px] border border-dashed border-slate-200">
-                لا توجد ألوان أو قياسات معرّفة لهذا المنتج حالياً.
+                {debouncedQuery ? "لا توجد نتائج مطابقة لبحثك الحالي." : "لا توجد ألوان أو قياسات معرّفة لهذا المنتج حالياً."}
               </div>
             )}
           </div>
         </div>
 
-        {/* Details of the process */}
+        {/* الجزء الأيسر: سلة تفاصيل البيع والتعميد */}
         <div className="lg:col-span-5">
           <div className="bg-[#050b1a] rounded-[40px] p-8 shadow-2xl text-white sticky top-10 border border-white/5">
             <div className="flex items-center gap-3 mb-8 text-right justify-start">

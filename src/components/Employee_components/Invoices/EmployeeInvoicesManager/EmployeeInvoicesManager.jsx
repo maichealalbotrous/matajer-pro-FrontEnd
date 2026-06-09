@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { FileText, RefreshCw, ArrowLeftRight, Calendar, Hash, ChevronDown, ChevronUp, Plus, Minus, Undo2 } from 'lucide-react';
+import { 
+  FileText, RefreshCw, ArrowLeftRight, Calendar, Hash, 
+  ChevronDown, ChevronUp, Plus, Minus, ChevronRight, ChevronLeft 
+} from 'lucide-react';
 import { getEmployeeInvoicesServer, returnInvoiceServer } from '../../Products/ProductVariants/lib';
-; 
 import MyButton from '@/components/MyButton/MyButton';
 import { useNavigate } from 'react-router-dom';
 import Public_Alert from '@/components/public_Alert/Public_Alert';
@@ -18,7 +20,13 @@ const EmployeeInvoicesManager = () => {
   const [expandedInvoiceId, setExpandedInvoiceId] = useState(null);
   const [actionLoadingId, setActionLoadingId] = useState(null);
   
+  // 💡 تحديد التبويب الحالي: 'today' لفواتير اليوم، و 'week' لفواتير الأسبوع
+  const [activeTab, setActiveTab] = useState('today');
   
+  // 💡 حالات الترقيم والتحكم بالصفحات
+  const [currentPage, setCurrentPage] = useState(1);
+  const INVOICES_PER_PAGE = 3; // عدد الفواتير في الصفحة الواحدة
+
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: "",
@@ -29,12 +37,17 @@ const EmployeeInvoicesManager = () => {
     onConfirm: () => {}
   });
 
-  //the quantity of returned Item 
   const [selectedQuantities, setSelectedQuantities] = useState({});
 
   useEffect(() => {
     fetchEmployeeInvoices();
   }, []);
+
+  // عند تغيير التبويب، نعود تلقائياً للصفحة الأولى ونغلق الفواتير المفتوحة
+  useEffect(() => {
+    setCurrentPage(1);
+    setExpandedInvoiceId(null);
+  }, [activeTab]);
 
   const fetchEmployeeInvoices = async () => {
     try {
@@ -44,6 +57,7 @@ const EmployeeInvoicesManager = () => {
       const fetchedInvoices = result?.data || (Array.isArray(result) ? result : []);
       setInvoices(fetchedInvoices);
 
+      // تهيئة عدادات الكميات الافتراضية للفواتير
       const initialQuantities = {};
       fetchedInvoices.forEach(invoice => {
         initialQuantities[invoice.id] = {};
@@ -64,7 +78,6 @@ const EmployeeInvoicesManager = () => {
     setExpandedInvoiceId(expandedInvoiceId === id ? null : id);
   };
 
-  // change the quantity 
   const handleQuantityChange = (invoiceId, variantId, currentMax, type) => {
     setSelectedQuantities(prev => {
       const currentQty = prev[invoiceId]?.[variantId] ?? 0;
@@ -96,7 +109,6 @@ const EmployeeInvoicesManager = () => {
       }));
   };
 
-  // return the selected items with their quantities to the server for processing the return, and then refresh the invoices list to reflect any changes
   const handleReturn = async (invoice) => {
     const itemsToReturn = getSelectedItemsPayload(invoice);
     
@@ -105,7 +117,6 @@ const EmployeeInvoicesManager = () => {
       return;
     }
 
-    // return window.confirm
     setConfirmModal({
       isOpen: true,
       title: "تأكيد عملية الإرجاع المخصصة",
@@ -114,7 +125,7 @@ const EmployeeInvoicesManager = () => {
       variant: "danger",
       icon: RefreshCw,
       onConfirm: async () => {
-        setConfirmModal(prev => ({ ...prev, isOpen: false })); // إغلاق الديالوج
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
         setActionLoadingId(invoice.id);
         setErrorMessage("");
         try {
@@ -131,7 +142,7 @@ const EmployeeInvoicesManager = () => {
           setShowSuccessAlert(true);
           fetchEmployeeInvoices(); 
           setTimeout(() => {
-          setShowSuccessAlert(false);
+            setShowSuccessAlert(false);
           }, 3000);
         } catch (err) {
           setErrorMessage(err.error || err.message || "فشلت عملية الارتجاع.");
@@ -142,7 +153,6 @@ const EmployeeInvoicesManager = () => {
     });
   };
 
-  // initiate the exchange process by saving the selected items and their quantities in localStorage, then navigate to the CurrentInvoice page where the employee can complete the exchange by selecting new items to replace the returned ones. The actual exchange logic will be handled on the CurrentInvoice page based on the saved session data.
   const handleExchange = (invoice) => {
     const itemsToExchange = getSelectedItemsPayload(invoice);
 
@@ -151,7 +161,6 @@ const EmployeeInvoicesManager = () => {
       return;
     }
 
-    // cexchange window.confirm
     setConfirmModal({
       isOpen: true,
       title: "بدء طلب الاستبدال المقاصي",
@@ -160,7 +169,7 @@ const EmployeeInvoicesManager = () => {
       variant: "success",
       icon: ArrowLeftRight,
       onConfirm: () => {
-        setConfirmModal(prev => ({ ...prev, isOpen: false })); // إغلاق الديالوج
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
         const exchangeSession = {
           original_invoice_id: invoice.id,
           returned_items: itemsToExchange.map(item => ({
@@ -177,12 +186,37 @@ const EmployeeInvoicesManager = () => {
     });
   };
 
+  // 💡 دالة فرز وتصفية الفواتير زمنياً بناءً على حقل الـ created_at
+  const filteredInvoices = invoices.filter(invoice => {
+    if (!invoice.created_at) return true; // احتياطاً إذا كان الحقل فارغاً
+    
+    const invoiceDate = new Date(invoice.created_at);
+    const today = new Date();
+    
+    // حساب الفارق الفعلي بالأيام
+    const diffTime = Math.abs(today - invoiceDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (activeTab === 'today') {
+      // إما في نفس اليوم تاريخياً أو الفارق أقل من يوم واحد
+      return diffDays <= 1 || invoiceDate.toDateString() === today.toDateString();
+    } else if (activeTab === 'week') {
+      // الفواتير التي تمت خلال آخر 7 أيام
+      return diffDays <= 7;
+    }
+    return true;
+  });
+
+  // 💡 حسابات الترقيم وتحديد مصفوفة الفواتير المعروضة بالصفحة الحالية فقط
+  const indexOfLastInvoice = currentPage * INVOICES_PER_PAGE;
+  const indexOfFirstInvoice = indexOfLastInvoice - INVOICES_PER_PAGE;
+  const currentInvoicesSlice = filteredInvoices.slice(indexOfFirstInvoice, indexOfLastInvoice);
+  const totalPages = Math.ceil(filteredInvoices.length / INVOICES_PER_PAGE);
+
   return (
-    <div className="p-4 bg-[#fcfcfc] min-h-screen text-right" dir="rtl">
-      {/* Public_Alert  */}
+    <div className="p-10 bg-[#fcfcfc] min-h-screen text-right" dir="rtl">
       <Public_Alert isVisible={showSuccessAlert} title={alertMessage} dis="تم تحديث قيود المستودع وجدول المبيعات بنجاح." />
 
-      {/* Delete confirm model*/}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
           <DeleteConfirmView 
@@ -199,9 +233,34 @@ const EmployeeInvoicesManager = () => {
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto space-y-4 pt-4">
+      <div className="max-w-5xl mx-auto space-y-6 pt-2">
+        
+        {/* العناوين والتبويبات الفاخرة */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 pb-6">
+          <div>
+            <h1 className="text-2xl font-black text-[#0f172a]">إدارة عمليات المرتجعات والمقاصة</h1>
+            <p className="text-slate-400 font-bold text-xs mt-1">تتبع مبيعاتك اليومية والأسبوعية وإدارتها بكفاءة</p>
+          </div>
+
+          {/* 💡 أزرار التبديل الدائرية (Tabs) */}
+          <div className="flex bg-slate-100 p-1.5 rounded-2xl w-fit self-start">
+            <button
+              onClick={() => setActiveTab('today')}
+              className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all ${activeTab === 'today' ? 'bg-white text-[#0f172a] shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              فواتير اليوم
+            </button>
+            <button
+              onClick={() => setActiveTab('week')}
+              className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all ${activeTab === 'week' ? 'bg-white text-[#0f172a] shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              فواتير الأسبوع الحالي
+            </button>
+          </div>
+        </div>
+
         {errorMessage && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-bold rounded-2xl">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold rounded-2xl animate-in fade-in">
             ⚠️ {errorMessage}
           </div>
         )}
@@ -209,17 +268,17 @@ const EmployeeInvoicesManager = () => {
         {isLoading ? (
           <div className="space-y-4">
             {Array(3).fill(0).map((_, idx) => (
-              <div key={idx} className="h-24 bg-white rounded-[28px] border border-slate-100 animate-pulse" />
+              <div key={idx} className="h-28 bg-white rounded-[32px] border border-slate-100 animate-pulse" />
             ))}
           </div>
-        ) : invoices.length === 0 ? (
+        ) : currentInvoicesSlice.length === 0 ? (
           <div className="py-20 text-center bg-white rounded-[40px] border border-dashed border-slate-200">
-            <FileText size={48} className="mx-auto text-slate-200 mb-4" />
-            <p className="text-slate-400 font-bold">لا يوجد فواتير مسجلة باسمك حالياً</p>
+            <FileText size={44} className="mx-auto text-slate-200 mb-4" />
+            <p className="text-slate-400 font-bold text-sm">لا توجد فواتير معروضة في هذا النطاق حالياً</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {invoices.map((invoice) => {
+            {currentInvoicesSlice.map((invoice) => {
               const isExpanded = expandedInvoiceId === invoice.id;
               const displayAmount = parseFloat(invoice.total_amount || invoice.total || 0);
 
@@ -238,8 +297,8 @@ const EmployeeInvoicesManager = () => {
                         <Hash size={18} />
                       </div>
                       <div>
-                        <h3 className="font-black text-[#0f172a] text-lg">فاتورة رقم #{invoice.id}</h3>
-                        <p className="text-slate-400 font-bold text-xs flex items-center gap-1 mt-1">
+                        <h3 className="font-black text-[#0f172a] text-base">فاتورة رقم #{invoice.id}</h3>
+                        <p className="text-slate-400 font-bold text-[11px] flex items-center gap-1 mt-1">
                           <Calendar size={12} /> {invoice.created_at || "اليوم"}
                         </p>
                       </div>
@@ -247,47 +306,47 @@ const EmployeeInvoicesManager = () => {
 
                     <div className="flex items-center gap-6 self-end sm:self-center">
                       <div className="text-left">
-                        <span className="text-2xl font-black text-[#0f172a]">{displayAmount}</span>
+                        <span className="text-xl font-black text-[#0f172a]">{displayAmount.toLocaleString()}</span>
                         <span className="text-xs font-black text-[#3198c1] mr-1">ل.س</span>
                       </div>
                       <div className="text-slate-300">
-                        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                        {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                       </div>
                     </div>
                   </div>
 
                   {isExpanded && (
-                    <div className="bg-slate-50/50 border-t border-slate-50 p-6 space-y-6 animate-in fade-in slide-in-from-top-2">
+                    <div className="bg-slate-50/50 border-t border-slate-50 p-6 space-y-5 animate-in fade-in slide-in-from-top-2">
                       <div className="space-y-2">
-                        <h4 className="text-xs font-black text-slate-400 mr-2">حدد الكميات المراد إرجاعها أو استبدالها من محتويات الفاتورة:</h4>
+                        <h4 className="text-xs font-black text-slate-400 mr-1">حدد الكميات المراد إرجاعها أو استبدالها من محتويات الفاتورة:</h4>
                         <div className="bg-white rounded-2xl border border-slate-100 p-4 space-y-3">
                           {invoice.items?.map((item, idx) => {
                             const selectedQty = selectedQuantities[invoice.id]?.[item.variant_id] ?? 0;
                             return (
-                              <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 py-2 border-b border-slate-50 last:border-0 text-sm font-bold text-[#0f172a]">
+                              <div key={idx} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 py-3 border-b border-slate-100 last:border-0 text-xs font-bold text-[#0f172a]">
                                 <div>
-                                  <span>{item.variant_name || `موديل #${item.variant_id}`}</span>
-                                  <span className="text-slate-400 text-xs mr-2">(المشترى: {item.quantity} قطع)</span>
+                                  <span className="font-black text-slate-700">{item.variant_name || `موديل #${item.variant_id}`}</span>
+                                  <span className="text-slate-400 text-[10px] mr-2">(الكمية المشتراة: {item.quantity} قطع)</span>
                                 </div>
                                 
-                                {/* أزرار التحكم بالكمية الجزئية المحددة للحركة الحالية */}
                                 <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                                   <div className="flex items-center gap-2 bg-slate-50 px-2 py-1 rounded-xl border border-slate-100">
                                     <button 
                                       onClick={() => handleQuantityChange(invoice.id, item.variant_id, item.quantity, 'decrement')}
                                       className="p-1 hover:bg-white rounded-lg text-slate-500 transition-all"
                                     >
-                                      <Minus size={14} />
+                                      <Minus size={12} />
                                     </button>
-                                    <span className="w-8 text-center text-sm font-black text-[#0f172a]">{selectedQty}</span>
+                                    <span className="w-8 text-center text-xs font-black text-[#0f172a]">{selectedQty}</span>
                                     <button 
                                       onClick={() => handleQuantityChange(invoice.id, item.variant_id, item.quantity, 'increment')}
                                       className="p-1 hover:bg-white rounded-lg text-slate-500 transition-all"
                                     >
-                                      <Plus size={14} />
+                                      <Plus size={12} />
                                     </button>
                                   </div>
-                                  <span className="font-black text-left min-w-[80px]">{parseFloat(item.sold_at_price) * (selectedQty || item.quantity)} ل.س</span>
+                                  {/* 💡 تصحيح المعروض المالي التلقائي بناءً على العداد الفعلي المختار حالياً */}
+                                  <span className="font-black text-left min-w-[90px] text-slate-600">{(parseFloat(item.sold_at_price) * selectedQty).toLocaleString()} ل.س</span>
                                 </div>
                               </div>
                             );
@@ -332,6 +391,48 @@ const EmployeeInvoicesManager = () => {
             })}
           </div>
         )}
+
+        {/* 💡 بار الترقيم (Pagination) السفلي المتراص والمحاذى بشكل فاخر */}
+        {!isLoading && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 pt-6 border-t border-slate-100 select-none">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronRight size={16} />
+            </button>
+
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+              {Array.from({ length: totalPages }).map((_, pageIdx) => {
+                const pageNumber = pageIdx + 1;
+                const isSelected = currentPage === pageNumber;
+                return (
+                  <button
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    className={`w-9 h-9 text-xs font-black rounded-lg transition-all ${
+                      isSelected 
+                        ? 'bg-[#3198c1] text-white shadow-sm shadow-[#3198c1]/25' 
+                        : 'text-slate-500 hover:bg-white hover:text-[#0f172a]'
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );
