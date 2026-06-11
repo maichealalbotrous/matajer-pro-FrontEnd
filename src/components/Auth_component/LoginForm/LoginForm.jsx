@@ -99,27 +99,42 @@ const onSubmit = (e) => {
             )}
           </div>
         </CardContent>
+      <CardFooter className="p-0 mt-8 flex flex-col items-center w-full">
+        {/* زر الدخول / إنشاء الحساب */}
+        <div className="w-full mb-5">
+          <MyButton 
+            className="bg-slate-900 hover:bg-slate-800 text-white w-full py-3.5 rounded-xl text-sm font-bold transition-all active:scale-[0.99] disabled:opacity-50"
+            title={loading ? "جاري المعالجة..." : (isLoginMode ? "دخول النظام ←" : "إنشاء الحساب ←")} 
+            onClick={onSubmit} 
+            disabled={loading}
+          />
+        </div>
 
-        <CardFooter className="p-0 mt-10 flex flex-col gap-8">
-          <div className="w-full">
-           <MyButton 
-              className="bg-gray-900 text-white"
-              title={loading ? "جاري المعالجة..." : (isLoginMode ? "دخول النظام ←" : "إنشاء الحساب ←")} 
-              onClick={onSubmit} 
-              disabled={loading}
-            />
-          </div>
+        {/* زر التبديل بين الدخول والإنشاء */}
+        <div className="text-center w-full mb-8">
+          <button 
+            type="button"
+            onClick={() => setIsLoginMode(!isLoginMode)}
+            className="text-xs font-black text-slate-400 hover:text-slate-700 transition-colors"
+          >
+            {isLoginMode ? "ليس لديك حساب؟ انشئ حساباً الآن" : "لديك حساب بالفعل؟ سجل الدخول الآن"}
+          </button>
+        </div>
 
-          <div className="text-center w-full">
-            <button 
-              onClick={() => setIsLoginMode(!isLoginMode)}
-              className="  mb-4 text-xs font-bold text-slate-400 hover:text-[#0f172a] transition-all"
-            >
-              {isLoginMode ? "ليس لديك حساب؟ انشئ حساباً الآن" : "لديك حساب بالفعل؟ سجل الدخول الآن"}
-            </button>
-          </div>
-        </CardFooter>
+        {/* توقيعك الأنيق مدمج بشكل انسيابي هادئ في ذيل البطاقة */}
+        <div className="w-full text-center border-t border-slate-100/70 pt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">
+          <p className="text-[10px] font-mono tracking-wider text-slate-600">
+            © 2026 Sanad Pro. Crafted with Code by{" "}
+            <span className="font-bold text-sm text-blue-800">ENG.Michael_Alboutros</span>
+          </p>
+        </div>
+      </CardFooter>
+
       </Card>
+      
+  
+
     </div>
+
   );
 }
