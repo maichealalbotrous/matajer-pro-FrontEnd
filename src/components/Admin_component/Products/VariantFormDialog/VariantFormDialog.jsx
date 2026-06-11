@@ -148,64 +148,78 @@ const handleSubmit = async (e) => {
 
             <div className="space-y-2">
               {sizes.map((s, index) => (
-                <div key={index} className="grid grid-cols-2 md:grid-cols-6 gap-2 items-end bg-slate-50 p-3 rounded-xl border border-slate-100 relative group animate-in fade-in duration-150">
-                  
-                  <div className="flex flex-col gap-1">
-                    <label className="font-bold text-slate-400 text-[10px]">المقاس</label>
-                    <input 
-                      type="text" required placeholder="S, M, XL" value={s.size}
-                      onChange={(e) => handleSizeChange(index, 'size', e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white border border-slate-100 rounded-lg font-bold text-xs focus:outline-none"
-                    />
-                  </div>
+        <div key={index} className="flex flex-col gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 relative group animate-in fade-in duration-150">
 
-                  <div className="flex flex-col gap-1">
-                    <label className="font-bold text-slate-400 text-[10px]">الكمية</label>
-                    <input 
-                      type="number" required min="0" placeholder="0" value={s.quantity}
-                      onChange={(e) => handleSizeChange(index, 'quantity', e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white border border-slate-100 rounded-lg font-bold text-xs focus:outline-none"
-                    />
-                  </div>
+          {/* السطر الأول: المقاس والكمية - يمتدان على كامل العرض بالتساوي */}
+          <div className="grid grid-cols-2 gap-3 w-full">
+            {/* المقاس */}
+            <div className="flex flex-col gap-1">
+              <label className="font-black text-slate-400 text-[10px] mr-1 truncate">المقاس</label>
+              <input 
+                type="text" required placeholder="S, M, XL" value={s.size}
+                onChange={(e) => handleSizeChange(index, 'size', e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200/70 rounded-xl font-bold text-sm text-center text-slate-700 focus:border-[#3198c1] focus:ring-1 focus:ring-[#3198c1] focus:outline-none transition-all"
+              />
+            </div>
 
-                  <div className="flex flex-col gap-1">
-                    <label className="font-bold text-slate-400 text-[10px]">رقم المنتج</label>
-                    <input 
-                      type="text" required placeholder="sku-m" value={s.sku}
-                      onChange={(e) => handleSizeChange(index, 'sku', e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white border border-slate-100 rounded-lg font-bold text-xs focus:outline-none"
-                    />
-                  </div>
+            {/* الكمية */}
+            <div className="flex flex-col gap-1">
+              <label className="font-black text-slate-400 text-[10px] mr-1 truncate">الكمية</label>
+              <input 
+                type="number" required min="0" placeholder="0" value={s.quantity}
+                onChange={(e) => handleSizeChange(index, 'quantity', e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200/70 rounded-xl font-bold text-sm text-center text-slate-700 focus:border-[#3198c1] focus:ring-1 focus:ring-[#3198c1] focus:outline-none transition-all"
+              />
+            </div>
+          </div>
 
-                  <div className="flex flex-col gap-1">
-                    <label className="font-bold text-slate-400 text-[10px]">سعر التكلفة</label>
-                    <input 
-                      type="number" required step="0.01" placeholder="0.00" value={s.cost_price}
-                      onChange={(e) => handleSizeChange(index, 'cost_price', e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white border border-slate-100 rounded-lg font-bold text-xs focus:outline-none"
-                    />
-                  </div>
+          {/* السطر الثاني: بقية الحقول وزر الحذف */}
+          <div className="grid grid-cols-1 md:grid-cols-10 gap-3 items-end w-full">
+            {/* رقم المنتج - SKU */}
+            <div className="flex flex-col gap-1 md:col-span-3">
+              <label className="font-black text-slate-400 text-[10px] mr-1">رقم المنتج</label>
+              <input 
+                type="text" required placeholder="sku-m-black-xl" value={s.sku}
+                onChange={(e) => handleSizeChange(index, 'sku', e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200/70 rounded-xl font-bold text-sm tracking-wide text-slate-700 focus:border-[#3198c1] focus:ring-1 focus:ring-[#3198c1] focus:outline-none transition-all"
+              />
+            </div>
 
-                  <div className="flex flex-col gap-1">
-                    <label className="font-bold text-slate-400 text-[10px]">سعر البيع الأساسي</label>
-                    <input 
-                      type="number" required step="0.01" placeholder="0.00" value={s.selling_price}
-                      onChange={(e) => handleSizeChange(index, 'selling_price', e.target.value)}
-                      className="w-full px-2 py-1.5 bg-white border border-slate-100 rounded-lg font-bold text-xs focus:outline-none"
-                    />
-                  </div>
+            {/* سعر التكلفة */}
+            <div className="flex flex-col gap-1 md:col-span-3">
+              <label className="font-black text-slate-400 text-[10px] mr-1">سعر التكلفة</label>
+              <input 
+                type="number" required step="0.01" placeholder="0.00" value={s.cost_price}
+                onChange={(e) => handleSizeChange(index, 'cost_price', e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200/70 rounded-xl font-bold text-sm text-slate-700 focus:border-[#3198c1] focus:ring-1 focus:ring-[#3198c1] focus:outline-none transition-all"
+              />
+            </div>
 
-                  <div className="flex justify-center items-center pb-0.5">
-                    {sizes.length > 1 && (
-                      <button 
-                        type="button" onClick={() => handleRemoveSizeRow(index)}
-                        className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    )}
-                  </div>
-                </div>
+            {/* سعر البيع الأساسي */}
+            <div className="flex flex-col gap-1 md:col-span-3">
+              <label className="font-black text-slate-400 text-[10px] mr-1">سعر البيع الأساسي</label>
+              <input 
+                type="number" required step="0.01" placeholder="0.00" value={s.selling_price}
+                onChange={(e) => handleSizeChange(index, 'selling_price', e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-200/70 rounded-xl font-bold text-sm text-slate-700 focus:border-[#3198c1] focus:ring-1 focus:ring-[#3198c1] focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* زر الحذف - يظهر متناسقاً في النهاية */}
+            <div className="flex justify-center items-center pb-1 md:col-span-1">
+              {sizes.length > 1 && (
+                <button 
+                  type="button" onClick={() => handleRemoveSizeRow(index)}
+                  className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                  title="حذف السطر"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
+        </div>
               ))}
             </div>
           </div>
