@@ -9,7 +9,8 @@ import {
   ShoppingBag, 
   Package, 
   LogOut, 
-  RefreshCw 
+  RefreshCw, 
+  PhoneCall
 } from 'lucide-react';
 import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 
@@ -32,7 +33,7 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
   ];
 
   const handleConfirmLogout = () => {
-    setIsConfirmOpen(false); // إغلاق المودال
+    setIsConfirmOpen(false); 
     handleLogoutSubmit({
       setLoading: setIsLoggingOut,
       navigate,
@@ -43,7 +44,7 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
 
   return (
     <>
-      {/* Overlay for mobile */}
+      {/* Overlay خلفية التعتيم للموبايل */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden transition-opacity"
@@ -51,30 +52,33 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
         />
       )}
 
-      <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 transition-transform duration-300 ease-in-out
+      {/* هيكل القائمة الجانبية المستقر */}
+      <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'} md:sticky md:flex`} dir="rtl">
         
-        {/* Logo Section */}
-        <div className="p-8 flex items-center gap-3">
+        {/* شعار النظام وهويته البصرية */}
+        <div className="p-8 flex items-center gap-3 flex-shrink-0">
           <div className="w-10 h-10 bg-[#050b1a] rounded-xl flex items-center justify-center shadow-lg shadow-black/20 text-white">
             <BookOpen size={22} />
           </div>
           <div className="flex flex-col">
             <h1 className="text-[15px] font-black text-[#0f172a] leading-tight tracking-tight">The Editorial POS</h1>
-            <span className="text-[10px] font-bold text-[#3198c1] opacity-80">نظام الموظف</span>
+            <span className="text-[10px] font-bold text-[#3198c1] opacity-80">لوحة تحكم الموظف</span>
           </div>
         </div>
 
-        {/* Navigation Links */}
+        {/* روابط التنقل الداخلية بالقائمة */}
         <nav className="flex-1 px-6 space-y-2 mt-4">
           {menuItems.map((item) => (
             <NavLink
               key={item.name}
               to={`/${item.name}`}
-              onClick={() => setIsOpen(false)} 
+              onClick={() => {
+                if (window.innerWidth < 768) setIsOpen(false);
+              }} 
               className={({ isActive }) => `
                 cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
-                ${isActive ? 'bg-[#f8fafc] text-[#0f172a] shadow-sm' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
+                ${isActive ? 'bg-slate-50 text-[#0f172a] shadow-sm' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
               `}
             >
               <div className="flex items-center gap-3">
@@ -85,23 +89,41 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
           ))}
         </nav>
 
-        {/* Footer/User Info & Logout Button */}
-        <div className="p-6 border-t border-slate-50 space-y-3">
-           {/* بطاقة معلومات الموظف */}
-           <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#3198c1] rounded-lg flex items-center justify-center text-white font-black text-xs">
+        {/* الجزء السفلي: معلومات المستخدم، الدعم، وتسجيل الخروج */}
+        <div className="p-6 border-t border-slate-50 space-y-4 flex-shrink-0 mt-auto">
+          
+           {/* بطاقة معلومات الموظف الحالية */}
+           <div className="bg-slate-50/80 border border-slate-100/50 rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-8 h-8 bg-[#3198c1] text-white rounded-lg flex items-center justify-center font-black text-xs select-none">
                 {EmpName.trim().charAt(0).toUpperCase()}
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-black text-[#0f172a]">{EmpName}</span>
+                <span className="text-[9px] font-bold text-slate-400">جلسة نشطة ومأمنة</span>
               </div>
            </div>
 
-           {/* كبسة تسجيل الخروج */}
+           {/* قسم الدعم الفني وتوقيع المهندس ميخائيل المدمج */}
+           <div className="bg-slate-50/60 border border-slate-100/80 rounded-2xl p-4 flex flex-col gap-1.5 items-center justify-center text-center relative group">
+              <div className="w-7 h-7 bg-[#3198c1]/10 text-[#3198c1] rounded-lg flex items-center justify-center mb-0.5">
+                <PhoneCall size={14} />
+              </div>
+              <span className="text-[11px] font-bold text-slate-400">للتواصل والاستفسار</span>
+              <a href="tel:+963930942741" className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors" dir="ltr">
+                +963 930 942 741
+              </a>
+              
+              <div className="text-[9px] font-bold text-slate-300 font-mono mt-2 pt-2 border-t border-slate-100 w-full tracking-wider group-hover:text-[#3198c1] transition-colors duration-200">
+                Made by ENG.Michael_Alboutros
+              </div>
+           </div>
+
+           {/* زر تسجيل الخروج من النظام */}
            <button 
+            type="button"
             onClick={() => setIsConfirmOpen(true)} 
             disabled={isLoggingOut}
-            className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-3.5 rounded-2xl hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
+            className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-3.5 rounded-full hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
           >
             {isLoggingOut ? (
               <>
@@ -118,7 +140,7 @@ function EmployeeSideBar({ isOpen, setIsOpen }) {
         </div>
       </aside>
 
-      {/* مودال تأكيد الخروج الفاخر والمخصص */}
+      {/* مودال تأكيد الخروج */}
       {isConfirmOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[100] p-4 animate-in fade-in duration-200">
           <DeleteConfirmView
