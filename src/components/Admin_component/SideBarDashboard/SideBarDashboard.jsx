@@ -11,7 +11,8 @@ import {
   LogOut,
   BookOpen, 
   RefreshCw, 
-  EyeClosed 
+  EyeClosed, 
+  PhoneCall
 } from 'lucide-react';
 import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 
@@ -91,6 +92,23 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             </NavLink>
           ))}
         </nav>
+   {/** for the contact */}
+        <div className="px-6 mb-2 flex-shrink-0">
+  <div className="bg-slate-50/60 border border-slate-100/80 rounded-2xl p-4 flex flex-col gap-1.5 items-center justify-center text-center relative group">
+    <div className="w-7 h-7 bg-[#3198c1]/10 text-[#3198c1] rounded-lg flex items-center justify-center mb-0.5">
+      <PhoneCall size={14} />
+    </div>
+    <span className="text-[11px] font-bold text-slate-400">للتواصل والاستفسار</span>
+    <a href="tel:+963030942741" className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors" dir="ltr">
+      +963 930 942 741
+    </a>
+    
+    {/* التوقيع المخفي الأنيق الذي يظهر بنعومة */}
+    <div className="text-[9px] font-bold text-slate-300 font-mono mt-2 pt-2 border-t border-slate-100 w-full tracking-wider group-hover:text-[#3198c1] transition-colors">
+      Made by ENG.Michael_Alboutros
+    </div>
+  </div>
+</div>
 
         {/* Logout Button */}
         <div className="p-8 mt-auto flex-shrink-0">
