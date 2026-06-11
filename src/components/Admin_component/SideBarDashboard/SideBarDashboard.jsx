@@ -99,9 +99,9 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
       <PhoneCall size={14} />
     </div>
     <span className="text-[11px] font-bold text-slate-400">للتواصل والاستفسار</span>
-    <a href="tel:+963030942741" className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors" dir="ltr">
+    <div  className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors" dir="ltr">
       +963 930 942 741
-    </a>
+    </div>
     
     {/* التوقيع المخفي الأنيق الذي يظهر بنعومة */}
     <div className="text-[9px] font-bold text-slate-300 font-mono mt-2 pt-2 border-t border-slate-100 w-full tracking-wider group-hover:text-[#3198c1] transition-colors">
