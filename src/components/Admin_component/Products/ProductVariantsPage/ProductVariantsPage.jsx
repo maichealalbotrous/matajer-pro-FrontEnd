@@ -6,7 +6,7 @@ import VariantCard from '../VariantCard/VariantCard';
 import Public_Alert from '@/components/public_Alert/Public_Alert';
 import VariantFormDialog from '../VariantFormDialog/VariantFormDialog';
 import MyInput from '@/components/MyInput/MyInput';
-import { getVariantsserver } from './lib';
+import { filterVariantsserver, getVariantsserver } from './lib';
 
 const ProductVariantsPage = () => {
   const { product_id } = useParams();
@@ -39,9 +39,9 @@ const ProductVariantsPage = () => {
         query: searchVal.trim()   // المسمى الاحتياطي لضمان المطابقة
       };
       
-      data = await getVariantsserver(filters);
+      data = await filterVariantsserver(filters);
     } else {
-      data = await getVariantsserver({});
+      data = await getVariantsserver(Number(product_id));
     }
     
     setVariants(data);

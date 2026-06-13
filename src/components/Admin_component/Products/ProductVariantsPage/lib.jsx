@@ -1,7 +1,7 @@
 import { variantApi } from "./api";
 
 /** getVariantsFromFilter */
-export const getVariantsserver = async (backendFilters = {}) => {
+export const filterVariantsserver = async (backendFilters = {}) => {
   try {
     if (backendFilters && Object.keys(backendFilters).length > 0) {
       const response = await variantApi.post('/filter', backendFilters);
@@ -10,12 +10,25 @@ export const getVariantsserver = async (backendFilters = {}) => {
       }
       throw new Error(response.data.message || "لاتوجد بيانات متوافقة مع البحث");
 
-    } else {
-      const response = await variantApi.get('/index');
-      return Array.isArray(response.data) ? response.data : [];
     }
   } catch (error) {
     throw error.response?.data || { message: "حدث خطأ أثناء جلب البيانات من الفلتر" };
+  }
+
+};
+
+export const getVariantsserver = async (id) => {
+  try {
+    // 🌟 تمرير الـ id المستلم بداخل كائن params يحمل المفتاح المطلوب في لارافل (product_id)
+    const response = await variantApi.get('/index', {
+      params: {
+        product_id: id
+      }
+    });
+    
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    throw error.response?.data || { message: "حدث خطأ أثناء جلب البيانات" };
   }
 };
 
