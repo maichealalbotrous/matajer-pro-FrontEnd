@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Menu, Plus, RefreshCw } from 'lucide-react';
 import KeyTable from '../KeyTable/KeyTable';
 import GenerateKeyDialog from '../GenerateKeyDialog/GenerateKeyDialog';
-import { getSubscriptionKeysServer } from './lib';
+import { getSubscriptionKeysServer, deleteSubscriptionKeyServer } from './lib'; // 🌟 تم استيراد دالة الحذف هنا
 
 const SubscriptionKeysManager = ({ isOpen, setIsOpen }) => {
   const [keys, setKeys] = useState([]);
@@ -25,6 +25,20 @@ const SubscriptionKeysManager = ({ isOpen, setIsOpen }) => {
       setErrorMessage(err.message || "حدث خطأ أثناء جلب الأكواد من قاعدة البيانات.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // 🌟 دالة معالجة حذف الكود من السيرفر وتحديث الواجهة تلقائياً
+  const handleDeleteKey = async (id) => {
+    try {
+      setErrorMessage("");
+      // 1. استدعاء الـ API لحذف العنصر من الخلفية (Laravel)
+      await deleteSubscriptionKeyServer(id);
+      
+      // 2. تحديث الـ State محلياً فوراً ليعكس الحذف بمرونة هندسية متميزة دون الحاجة لإعادة جلب كل البيانات
+      setKeys((prevKeys) => prevKeys.filter((keyItem) => keyItem.id !== id));
+    } catch (err) {
+      setErrorMessage(err.message || "فشلت عملية حذف كود الاشتراك، يرجى المحاولة لاحقاً.");
     }
   };
 
@@ -75,8 +89,8 @@ const SubscriptionKeysManager = ({ isOpen, setIsOpen }) => {
           ))}
         </div>
       ) : (
-        // عرض جدول البيانات الفعلي
-        <KeyTable keys={keys} />
+        // 🌟 عرض جدول البيانات الفعلي وتمرير دالة الحذف للمكون التابع
+        <KeyTable keys={keys} onDeleteKey={handleDeleteKey} />
       )}
 
       {/* نافذة التوليد المنبثقة */}

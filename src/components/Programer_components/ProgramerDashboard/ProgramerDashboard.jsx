@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, Search } from 'lucide-react'; 
+import { Search } from 'lucide-react'; 
 import StatCard from '../StatCard/StatCard';
 import SubscriptionGrid from '../SubscriptionKeyCard/SubscriptionKeyCard';
 import { getBranchesServer } from '../Branches/BrancheManager/lib';
 import { getSubscriptionKeysServer } from '../SubscriptionKeys/SubscriptionKeysManager/lib';
 
-const ProgramerDashboard = ({ isOpen, setIsOpen }) => {
+// استقبال الـ Props الممررة من الـ Layout بشكل تقليدي ومستقر
+const ProgramerDashboard = () => {
   const [data, setData] = useState([]);
-  const [subKey,setsubKey] = useState([]);
+  const [subKey, setsubKey] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -27,14 +28,14 @@ const ProgramerDashboard = ({ isOpen, setIsOpen }) => {
     fetchBranches();
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     const fetchSubKey = async () => {
       try {
         setIsLoading(true);
         const response = await getSubscriptionKeysServer();
         setsubKey(Array.isArray(response) ? response : []);
       } catch (error) {
-        console.error('Error fetching branches:', error);
+        console.error('Error fetching subkeys:', error);
       } finally {
         setIsLoading(false);
       }
@@ -43,23 +44,24 @@ const ProgramerDashboard = ({ isOpen, setIsOpen }) => {
     fetchSubKey();
   }, []);
 
- 
+  // تصفية مفاتيح التراخيص بناءً على نص البحث
+  const filteredKeys = subKey.filter((keyItem) => {
+    const term = searchTerm.toLowerCase();
+    const keyMatch = keyItem.license_key?.toLowerCase().includes(term);
+    const branchMatch = keyItem.branch_name?.toLowerCase().includes(term);
+    return keyMatch || branchMatch;
+  });
+
   return (
-    <div className="p-8 bg-[#fcfcfc] min-h-screen space-y-10" dir="rtl">
+    // تم تغيير الـ padding التمريري في الموبايل ليتناسق مع وجود الهيدر (p-4 md:p-8)
+    <div className="p-4 md:p-8 bg-[#fcfcfc] min-h-screen space-y-10" dir="rtl">
       
+      {/* 🌟 رأس الصفحة النظيف والموحد بدون أزرار همبرغر زائدة */}
       <div className="flex items-center gap-4">
-        {!isOpen && (
-          <button 
-            onClick={() => setIsOpen(true)}
-            className="p-3 bg-white border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors shadow-sm"
-          >
-            <Menu size={20} className="text-[#0f172a]" />
-          </button>
-        )}
         <h2 className="text-xl font-black text-[#0f172a]">لوحة التحكم العامة</h2>
       </div>
 
-      {/*StatCard*/}
+      {/* أقسام الإحصائيات الذكية */}
       <section>
         <StatCard Data={data} isLoading={isLoading} /> 
       </section>
@@ -69,7 +71,7 @@ const ProgramerDashboard = ({ isOpen, setIsOpen }) => {
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 px-2">
             <h2 className="text-xl font-black text-[#0f172a]">مفاتيح التراخيص</h2>
             
-            {/* بار البحث النظيف الفعال */}
+            {/* بار البحث الفعال وعالي الدقة */}
             <div className="relative max-w-xs w-full sm:w-72">
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input 
@@ -82,8 +84,8 @@ const ProgramerDashboard = ({ isOpen, setIsOpen }) => {
             </div>
           </div>
           
-          {/* عرض التراخيص المصفاة */}
-          <SubscriptionGrid keysData={subKey} />
+          {/* عرض التراخيص المصفاة لتفعيل خاصية البحث الفوري */}
+          <SubscriptionGrid keysData={filteredKeys} />
         </div>
       </div>
     </div>

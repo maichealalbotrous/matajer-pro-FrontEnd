@@ -31,4 +31,19 @@ export const generateSubscriptionKeysServer = async (data) => {
       "فشلت عملية توليد الأكواد، يرجى التحقق من الصلاحيات والمخرجات."
     );
   }
+}
+
+  export const deleteSubscriptionKeyServer = async (id) => {
+  try {
+    const response = await api.delete(`/delete` ,{ data: { id } });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 
+      error.response?.data?.error ||
+      "فشلت عملية الحذف، يرجى التحقق من الخادم والصلاحيات."
+    );
+  }
 };
+
+
