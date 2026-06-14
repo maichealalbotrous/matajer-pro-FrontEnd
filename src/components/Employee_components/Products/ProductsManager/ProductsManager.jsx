@@ -11,7 +11,6 @@ const ProductsManager = () => {
       try {
         setIsLoading(true);
         const response = await getProductsFromServer();
-
         let finalProducts = [];
 
         if (Array.isArray(response)) {
