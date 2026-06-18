@@ -1,6 +1,6 @@
 {
-  "short_name": "Sanad pro",
-  "name": "Sanad pro",
+  "short_name": "matajer-pro",
+  "name": "matajer-pro",
   "icons": [
     {
       "src": "/assets/screen-mobile.png",
@@ -8,12 +8,12 @@
       "type": "image/png"
     },
     {
-      "src": "/assets/screen_descktop.png",
+      "src": "/assets/screen_tablet.png",
       "sizes": "256x256",
       "type": "image/png"
     },
     {
-      "src": "/assets/screen_tablet.png",
+      "src": "/assets/screen_descktop.png",
       "sizes": "384x384",
       "type": "image/png"
     },
