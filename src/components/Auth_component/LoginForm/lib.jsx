@@ -48,7 +48,7 @@ export const handleAuthSubmit = async ({
             
             login(response.user, response.token);
 
-            if (response.is_super) {
+            if (response.role === 'super_admin') {
                 navigate('/ProgramerDashboard');
             } 
             else if (response.role === 'admin') {
