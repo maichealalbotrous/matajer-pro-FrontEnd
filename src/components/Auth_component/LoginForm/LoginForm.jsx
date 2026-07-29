@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import MyInput from "@/components/MyInput/MyInput";
@@ -14,6 +15,9 @@ export function LoginForm() {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // ✅ يتحكم بإظهار/إخفاء كلمة المرور كنص عادي بدل نقاط
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -84,14 +88,29 @@ const onSubmit = (e) => {
           />
           
           <div className="space-y-2">
-            <MyInput 
-              placeholder="••••••••" 
-              LabelTitle="كلمة المرور" 
-              type="password" 
-              className="bg-slate-50 border-none rounded-2xl h-14 px-6 font-bold"
-              value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-            />
+            {/* ✅ غلاف relative عشان نقدر نحط زر إظهار/إخفاء كلمة المرور فوق الحقل */}
+            <div className="relative">
+              <MyInput 
+                placeholder="••••••••" 
+                LabelTitle="كلمة المرور" 
+                type={showPassword ? "text" : "password"} 
+                className="bg-slate-50 border-none rounded-2xl h-14 pr-6 pl-12 font-bold"
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}
+              />
+
+              {/* ✅ زر إظهار/إخفاء كلمة المرور - بيبدّل بين text و password */}
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute left-4 bottom-[14px] text-slate-400 hover:text-slate-600 transition-colors"
+                tabIndex={-1}
+                aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
             {isLoginMode && (
               <div className="flex justify-start px-1">
                 <button className="text-[11px] font-black text-[#3198c1] hover:text-[#257a9c]">نسيت كلمة المرور؟</button>
