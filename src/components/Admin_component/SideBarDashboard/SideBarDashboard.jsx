@@ -3,23 +3,23 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext/AuthContext';
 import { handleLogoutSubmit } from '@/components/Auth_component/LoginForm/lib';
 
-import { 
-  LayoutGrid, 
-  ShoppingBag, 
-  Package,   
-  BarChart3, 
+import {
+  LayoutGrid,
+  ShoppingBag,
+  Package,
+  BarChart3,
   LogOut,
-  BookOpen, 
-  RefreshCw, 
-  EyeClosed, 
-  PhoneCall
+  BookOpen,
+  RefreshCw,
+  EyeClosed,
+  PhoneCall,
 } from 'lucide-react';
 import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
 
 function SideBarDashboard({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [isLoggingOut, setIsLoggingOut] = useState(false); 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const setAlertConfigPlaceholder = () => {};
@@ -32,32 +32,51 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
   ];
 
   const handleConfirmLogout = () => {
-    setIsConfirmOpen(false); 
+    setIsConfirmOpen(false);
     handleLogoutSubmit({
       setLoading: setIsLoggingOut,
       navigate,
       logout,
-      setAlertConfig: setAlertConfigPlaceholder
+      setAlertConfig: setAlertConfigPlaceholder,
     });
   };
 
- return (
+  return (
     <>
-      {/* Overlay للموبايل */}
+      {/* Overlay للموبايل وكل مقاسات التابلت (بما فيها آيباد بالوضع الأفقي حتى 1366px) */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden transition-opacity"
+        <div
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 2xl:hidden transition-opacity"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {isOpen && <div className="hidden md:block w-72 flex-shrink-0 transition-all duration-300" />}
+      {/* ✅ الـ spacer الثابت بجانب السايد بار يظهر فقط على الشاشات الكبيرة الحقيقية (2xl+) */}
+      {isOpen && (
+        <div className="hidden 2xl:block w-72 flex-shrink-0 transition-all duration-300" />
+      )}
 
-      <aside className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}`} dir="rtl">
-        
+      {/* ✅ زر إعادة الفتح — عنصر مستقل خارج الـ aside تماماً، عشان يضل ظاهر
+          وثابت بمكانه حتى لما السايد بار يكون مسحوب بره الشاشة بالكامل.
+          يظهر فقط عند الإغلاق، وعلى المقاسات الأصغر من 2xl (موبايل + كل التابلت) */}
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className=" me-11 fixed top-4 right-4 z-[60] w-11 h-11 flex items-center justify-center bg-white border border-slate-100 rounded-2xl shadow-md text-slate-400 hover:text-[#0f172a] transition-colors 2xl:hidden"
+          aria-label="فتح القائمة"
+        >
+          <EyeClosed size={20} />
+        </button>
+      )}
+
+      <aside
+        className={`fixed right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col z-50 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : 'translate-x-full 2xl:translate-x-0'}`}
+        dir="rtl"
+      >
         {!isOpen && (
-          <div className="absolute top-4 left-4 cursor-pointer text-slate-400 hover:text-[#0f172a] transition-colors z-50">
+          <div className="hidden me-11 2xl:block absolute top-4 left-4 cursor-pointer text-slate-400 hover:text-[#0f172a] transition-colors z-50">
             <EyeClosed onClick={() => setIsOpen(true)} size={20} />
           </div>
         )}
@@ -68,8 +87,12 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             <BookOpen size={22} />
           </div>
           <div className="flex flex-col">
-            <h1 className="text-[15px] font-black text-[#0f172a] leading-tight tracking-tight">The Editorial POS</h1>
-            <span className="text-[10px] font-bold text-[#3198c1] opacity-80">نظام الإدارة الراقي</span>
+            <h1 className="text-[15px] font-black text-[#0f172a] leading-tight tracking-tight">
+              The Editorial POS
+            </h1>
+            <span className="text-[10px] font-bold text-[#3198c1] opacity-80">
+              نظام الإدارة الراقي
+            </span>
           </div>
         </div>
 
@@ -78,10 +101,12 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
           {menuItems.map((item) => (
             <NavLink
               key={item.name}
-              to={`/${item.name}`} 
+              to={`/${item.name}`}
               onClick={() => {
-                if (window.innerWidth < 768) setIsOpen(false);
-              }} 
+                // ✅ نفس نقطة التوقف (1536px = 2xl) المستخدمة بالـ overlay، بحيث
+                // السايد بار ينسكر تلقائياً عند اختيار رابط على الموبايل وكل مقاسات التابلت
+                if (window.innerWidth < 1536) setIsOpen(false);
+              }}
               className={({ isActive }) => `
                 cursor-pointer w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all group
                 ${isActive ? 'bg-slate-50 text-[#0f172a] shadow-sm' : 'text-slate-400 hover:bg-slate-50/50 hover:text-slate-600'}
@@ -92,40 +117,49 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             </NavLink>
           ))}
         </nav>
-   {/** for the contact */}
+        {/** for the contact */}
         <div className="px-6 mb-2 flex-shrink-0">
-  <div className="bg-slate-50/60 border border-slate-100/80 rounded-2xl p-4 flex flex-col gap-1.5 items-center justify-center text-center relative group">
-    <div className="w-7 h-7 bg-[#3198c1]/10 text-[#3198c1] rounded-lg flex items-center justify-center mb-0.5">
-      <PhoneCall size={14} />
-    </div>
-    <span className="text-[11px] font-bold text-slate-400">للتواصل والاستفسار</span>
-    <div  className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors" dir="ltr">
-      +963 930 942 741
-    </div>
-    
-    {/* التوقيع المخفي الأنيق الذي يظهر بنعومة */}
-    <div className="text-[9px] font-bold text-slate-300 font-mono mt-2 pt-2 border-t border-slate-100 w-full tracking-wider group-hover:text-[#3198c1] transition-colors">
-      Made by ENG.Michael_Alboutros
-    </div>
-  </div>
-</div>
+          <div className="bg-slate-50/60 border border-slate-100/80 rounded-2xl p-4 flex flex-col gap-1.5 items-center justify-center text-center relative group">
+            <div className="w-7 h-7 bg-[#3198c1]/10 text-[#3198c1] rounded-lg flex items-center justify-center mb-0.5">
+              <PhoneCall size={14} />
+            </div>
+            <span className="text-[11px] font-bold text-slate-400">
+              للتواصل والاستفسار
+            </span>
+            <div
+              className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors"
+              dir="ltr"
+            >
+              +963 930 942 741
+            </div>
+
+            {/* التوقيع المخفي الأنيق الذي يظهر بنعومة */}
+            <div className="text-[9px] font-bold text-slate-300 font-mono mt-2 pt-2 border-t border-slate-100 w-full tracking-wider group-hover:text-[#3198c1] transition-colors">
+              Made by ENG.Michael_Alboutros
+            </div>
+          </div>
+        </div>
 
         {/* Logout Button */}
         <div className="p-8 mt-auto flex-shrink-0">
-          <button 
-            onClick={() => setIsConfirmOpen(true)} 
+          <button
+            onClick={() => setIsConfirmOpen(true)}
             disabled={isLoggingOut}
             className="w-full bg-red-50 text-red-500 flex items-center justify-center gap-3 py-4 rounded-full hover:bg-red-100 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed group"
           >
             {isLoggingOut ? (
               <>
                 <RefreshCw size={18} className="animate-spin text-red-500" />
-                <span className="text-sm font-black tracking-wide">جاري الخروج...</span>
+                <span className="text-sm font-black tracking-wide">
+                  جاري الخروج...
+                </span>
               </>
             ) : (
               <>
                 <LogOut size={20} />
-                <span className="text-sm font-black tracking-wide">تسجيل الخروج</span>
+                <span className="text-sm font-black tracking-wide">
+                  تسجيل الخروج
+                </span>
               </>
             )}
           </button>
@@ -142,7 +176,7 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             processingText="جاري الخروج..."
             isDeleting={isLoggingOut}
             variant="danger"
-            icon={LogOut} 
+            icon={LogOut}
             onConfirm={handleConfirmLogout}
             onCancel={() => setIsConfirmOpen(false)}
           />

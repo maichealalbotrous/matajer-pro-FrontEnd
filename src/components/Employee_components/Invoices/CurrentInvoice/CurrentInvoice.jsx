@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, ArrowLeftRight, ShoppingBag, RotateCcw } from 'lucide-react';
 import InvoiceItem from '../InvoiceItem/InvoiceItem';
-import InvoiceSummary from '../InvoiceSummary/InvoiceSummary';
+import InvoiceSummary from '../Invoices_Summary/InvoiceSummary/InvoiceSummary';
 import SuccessAlert from '@/components/SuccessAlert/SuccessAlert';
 import { storeInvoiceServer, returnInvoiceServer, exchangeInvoiceServer } from '../../Products/ProductVariants/lib';
 

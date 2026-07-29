@@ -1,30 +1,30 @@
 import React from 'react';
-import { CreditCard, RefreshCw, ArrowLeftRight } from 'lucide-react';
+import { CreditCard, ArrowLeftRight } from 'lucide-react';
 import MyButton from '@/components/MyButton/MyButton';
 
-const InvoiceSummary = ({ 
-  invoiceType, 
-  setInvoiceType, 
-  originalInvoiceId, 
-  setOriginalInvoiceId, 
-  notes, 
-  setNotes, 
-  totalAmount, 
+// Shared form content used by both the desktop card and the mobile bottom sheet.
+// Pure presentation — no state of its own besides what's passed in.
+const InvoiceSummaryContent = ({
+  invoiceType,
+  setInvoiceType,
+  originalInvoiceId,
+  setOriginalInvoiceId,
+  notes,
+  setNotes,
+  totalAmount,
   onSubmit,
   disabled,
   isExchangeMode,
   exchangeDetails
 }) => {
-  
+
   const types = [
     { id: 'sale', label: 'بيع مباشرة', icon: CreditCard },
     { id: 'exchange', label: 'تبديل مقاصي', icon: ArrowLeftRight },
   ];
 
   return (
-    <div className="bg-[#050b1a] rounded-[40px] p-8 shadow-2xl text-white sticky top-8 text-right">
-      <h2 className="text-xl font-black mb-6">إتمام العملية</h2>
-      
+    <>
       {/* Selector */}
       <div className="flex gap-2 mb-8 bg-white/5 p-2 rounded-2xl" dir="rtl">
         {types.map((type) => (
@@ -95,14 +95,14 @@ const InvoiceSummary = ({
         )}
       </div>
 
-      <MyButton 
+      <MyButton
         title={disabled ? "جاري الحفظ والتدقيق..." : "تأكيد وإرسال الفاتورة"} 
         onClick={onSubmit}
         disabled={disabled}
         className="w-full py-5 bg-white text-[#050b1a] hover:bg-slate-200 shadow-xl disabled:opacity-50 transition-all font-black rounded-2xl"
       />
-    </div>
+    </>
   );
 };
 
-export default InvoiceSummary;
+export default InvoiceSummaryContent;

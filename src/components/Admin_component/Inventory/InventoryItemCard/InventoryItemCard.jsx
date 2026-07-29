@@ -12,7 +12,6 @@ function InventoryItemCard({ items = [] }) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8" dir="rtl">
       {items.map((item, index) => {
         const currentSizes = item.sizes || item.sizes_details || [];
-        
         const totalQuantity = item.total_group_qty !== undefined 
           ? item.total_group_qty 
           : currentSizes.reduce((sum, s) => sum + (Number(s.quantity) || 0), 0);
@@ -31,6 +30,9 @@ function InventoryItemCard({ items = [] }) {
 
                   {/* Title & Info */}
                   <div className="flex flex-col gap-1">
+                    <h1 className="bg-slate-100 mb-4 text-[#0f172a] text-[10px] font-black px-2 py-0.5 rounded-lg w-fit">
+                       {item.sku || currentSizes[0]?.sku.slice(0,1) || '—'} <span>رقم المنتج</span>
+                      </h1>
                     <span className="bg-slate-100 text-[#0f172a] text-[10px] font-black px-2 py-0.5 rounded-lg w-fit">
                       {item.product_name}
                     </span>
@@ -96,7 +98,7 @@ function InventoryItemCard({ items = [] }) {
 
               <div>
                 <span className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-tight">
-                  إجمالي مبيع الصنف المخزنية
+                  إجمالي مبيع الصنف المخزنية 
                 </span>
                 <span className="text-lg font-black text-green-600 tabular-nums">
                   {Number(item.total_group_market || item.original_price || 0).toLocaleString('en-US')} <small className="text-[10px] mr-0.5">ل.س</small>

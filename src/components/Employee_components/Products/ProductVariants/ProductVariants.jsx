@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronRight, Info, Search, X } from 'lucide-react';
+import { ChevronRight, Info, Search, X, ShoppingCart } from 'lucide-react';
 import SuccessAlert from '@/components/SuccessAlert/SuccessAlert';
 import MyInput from '@/components/MyInput/MyInput';
 import MyButton from '@/components/MyButton/MyButton';
@@ -25,6 +25,10 @@ const ProductVariants = ({ addToInvoice }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  // 💡 UI-only state: controls whether the invoice/cart panel is open on mobile.
+  // This does not affect any business logic — purely presentational.
+  const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
 
   // 💡 تفصيل (Debounce) ناعم لمنع استهلاك ريكويستات السيرفر أثناء الكتابة السريعة
 
@@ -78,6 +82,7 @@ const ProductVariants = ({ addToInvoice }) => {
       fetchLiveVariants();
     }
   }, [productId, debouncedQuery]); // يتم إعادة الاستدعاء تلقائياً عند تغيير المنتج أو كلمة البحث
+
   const handleSelectSize = (parent, sizeObj) => {
     setSelectedSizeVariant(sizeObj);
 
@@ -93,6 +98,9 @@ const ProductVariants = ({ addToInvoice }) => {
 
       item_notes: '',
     });
+
+    // 💡 UI-only: على الموبايل، افتح لوحة الفاتورة تلقائياً بعد اختيار المقاس
+    setIsMobileCartOpen(true);
   };
 
   const handleConfirmAddition = () => {
@@ -136,10 +144,92 @@ const ProductVariants = ({ addToInvoice }) => {
     setParentVariant(null);
     setShowSuccessAlert(true);
     setTimeout(() => setShowSuccessAlert(false), 4000);
+
+    // 💡 UI-only: أغلق لوحة الموبايل بعد نجاح الإضافة
+    setIsMobileCartOpen(false);
   };
 
+  // 💡 محتوى لوحة تفاصيل البيع — تم استخراجه كدالة عرض لإعادة استخدامه
+  // في كل من اللوحة الثابتة على الديسكتوب واللوحة المنبثقة على الموبايل،
+  // دون تكرار الكود أو المساس بأي منطق برمجي.
+  const renderInvoicePanelContent = () => (
+    <>
+      <div className="flex items-center gap-3 mb-8 text-right justify-start">
+        <div className="w-10 h-10 bg-[#3198c1] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#3198c1]/20">
+          <Info size={20} />
+        </div>
+
+        <div>
+          <h2 className="text-xl font-black">تفاصيل البيع الفعلي</h2>
+
+          {selectedSizeVariant && (
+            <p className="text-xs text-slate-400 mt-1 font-bold">
+              المختار: {selectedSizeVariant.sku} (
+              {selectedSizeVariant.size})
+            </p>
+          )}
+        </div>
+      </div>
+
+      {errorMessage && (
+        <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold rounded-2xl text-right animate-in fade-in">
+          ⚠️ {errorMessage}
+        </div>
+      )}
+
+      <div className="space-y-6">
+        <MyInput
+          LabelTitle={'سعر البيع الفعلي (للقطعة)'}
+          type="number"
+          className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 font-black text-right"
+          value={saleDetails.sold_at_price}
+          onChange={(e) =>
+            setSaleDetails({
+              ...saleDetails,
+              sold_at_price: e.target.value,
+            })
+          }
+        />
+
+        <MyInput
+          LabelTitle={'الكمية المطلوبة'}
+          type="number"
+          className="bg-white/5 border-white/10 text-white font-black text-right"
+          value={saleDetails.quantity}
+          onChange={(e) =>
+            setSaleDetails({ ...saleDetails, quantity: e.target.value })
+          }
+        />
+
+        <div className="flex flex-col gap-2 text-right">
+          <label className="text-xs font-black text-slate-400 mr-2 uppercase tracking-wider">
+            ملاحظات البند
+          </label>
+
+          <textarea
+            className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1]/50 transition-all min-h-[100px] text-right text-white placeholder:text-slate-600"
+            placeholder="ملاحظات حول هذا الصنف بالتحديد..."
+            value={saleDetails.item_notes}
+            onChange={(e) =>
+              setSaleDetails({
+                ...saleDetails,
+                item_notes: e.target.value,
+              })
+            }
+          />
+        </div>
+
+        <MyButton
+          title="إضافة للفاتورة الحالية"
+          onClick={handleConfirmAddition}
+          className="w-full py-5 bg-[#3198c1] hover:bg-[#2a84a8] text-white rounded-2xl shadow-xl font-black transition-all active:scale-[0.98]"
+        />
+      </div>
+    </>
+  );
+
   return (
-    <div className="p-10 bg-[#fcfcfc] min-h-screen" dir="rtl">
+    <div className="p-6 sm:p-10 bg-[#fcfcfc] min-h-screen" dir="rtl">
       <SuccessAlert
         isVisible={showSuccessAlert}
         onClose={() => setShowSuccessAlert(false)}
@@ -293,84 +383,59 @@ const ProductVariants = ({ addToInvoice }) => {
           </div>
         </div>
 
-        {/* الجزء الأيسر: سلة تفاصيل البيع والتعميد */}
+        {/* الجزء الأيسر: سلة تفاصيل البيع والتعميد — تظهر ثابتة فقط على الديسكتوب */}
 
-        <div className="lg:col-span-5">
+        <div className="hidden lg:block lg:col-span-5">
           <div className="bg-[#050b1a] rounded-[40px] p-8 shadow-2xl text-white sticky top-10 border border-white/5">
-            <div className="flex items-center gap-3 mb-8 text-right justify-start">
-              <div className="w-10 h-10 bg-[#3198c1] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#3198c1]/20">
-                <Info size={20} />
-              </div>
-
-              <div>
-                <h2 className="text-xl font-black">تفاصيل البيع الفعلي</h2>
-
-                {selectedSizeVariant && (
-                  <p className="text-xs text-slate-400 mt-1 font-bold">
-                    المختار: {selectedSizeVariant.sku} (
-                    {selectedSizeVariant.size})
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {errorMessage && (
-              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold rounded-2xl text-right animate-in fade-in">
-                ⚠️ {errorMessage}
-              </div>
-            )}
-
-            <div className="space-y-6">
-              <MyInput
-                LabelTitle={'سعر البيع الفعلي (للقطعة)'}
-                type="number"
-                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 font-black text-right"
-                value={saleDetails.sold_at_price}
-                onChange={(e) =>
-                  setSaleDetails({
-                    ...saleDetails,
-                    sold_at_price: e.target.value,
-                  })
-                }
-              />
-
-              <MyInput
-                LabelTitle={'الكمية المطلوبة'}
-                type="number"
-                className="bg-white/5 border-white/10 text-white font-black text-right"
-                value={saleDetails.quantity}
-                onChange={(e) =>
-                  setSaleDetails({ ...saleDetails, quantity: e.target.value })
-                }
-              />
-
-              <div className="flex flex-col gap-2 text-right">
-                <label className="text-xs font-black text-slate-400 mr-2 uppercase tracking-wider">
-                  ملاحظات البند
-                </label>
-
-                <textarea
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1]/50 transition-all min-h-[100px] text-right text-white placeholder:text-slate-600"
-                  placeholder="ملاحظات حول هذا الصنف بالتحديد..."
-                  value={saleDetails.item_notes}
-                  onChange={(e) =>
-                    setSaleDetails({
-                      ...saleDetails,
-                      item_notes: e.target.value,
-                    })
-                  }
-                />
-              </div>
-
-              <MyButton
-                title="إضافة للفاتورة الحالية"
-                onClick={handleConfirmAddition}
-                className="w-full py-5 bg-[#3198c1] hover:bg-[#2a84a8] text-white rounded-2xl shadow-xl font-black transition-all active:scale-[0.98]"
-              />
-            </div>
+            {renderInvoicePanelContent()}
           </div>
         </div>
       </div>
+
+      {/* 💡 زر عائم لفتح الفاتورة على شاشات الموبايل فقط — يحل محل الفاتورة الطويلة أسفل الصفحة */}
+      <button
+        onClick={() => setIsMobileCartOpen(true)}
+        className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-[#050b1a] text-white px-6 py-4 rounded-full shadow-2xl shadow-black/30 border border-white/10 font-black text-sm active:scale-95 transition-all"
+      >
+        <ShoppingCart size={18} className="text-[#3198c1]" />
+        عرض الفاتورة
+        {selectedSizeVariant && (
+          <span className="w-5 h-5 flex items-center justify-center bg-[#3198c1] text-white text-[10px] rounded-full font-black">
+            1
+          </span>
+        )}
+      </button>
+
+      {/* 💡 لوحة الفاتورة المنبثقة من الأسفل (Bottom Sheet) — للموبايل فقط */}
+      {isMobileCartOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          {/* خلفية معتمة قابلة للنقر لإغلاق اللوحة */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in"
+            onClick={() => setIsMobileCartOpen(false)}
+          />
+
+          <div className="absolute bottom-0 inset-x-0 max-h-[88vh] flex flex-col bg-[#050b1a] text-white rounded-t-[32px] shadow-2xl border-t border-white/10 animate-in slide-in-from-bottom duration-300">
+            {/* مقبض السحب + زر الإغلاق */}
+            <div className="flex items-center justify-between px-6 pt-4 pb-2 shrink-0">
+              <button
+                onClick={() => setIsMobileCartOpen(false)}
+                className="p-2 rounded-full hover:bg-white/10 transition-all text-slate-400"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="w-10 h-1.5 rounded-full bg-white/15" />
+
+              <div className="w-8" />
+            </div>
+
+            <div className="overflow-y-auto px-6 pb-8 pt-2">
+              {renderInvoicePanelContent()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
