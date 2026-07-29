@@ -143,7 +143,7 @@ const onSubmit = (e) => {
         {/* توقيعك الأنيق مدمج بشكل انسيابي هادئ في ذيل البطاقة */}
         <div className="w-full text-center border-t border-slate-100/70 pt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">
           <p className="text-[10px] font-mono tracking-wider text-slate-600">
-            © 2026 Sanad Pro. Crafted with Code by{" "}
+            © 2026 matajer-Pro. Crafted with Code by{" "}
             <span className="font-bold text-sm text-blue-800">ENG.Michael_Alboutros</span>
           </p>
         </div>
