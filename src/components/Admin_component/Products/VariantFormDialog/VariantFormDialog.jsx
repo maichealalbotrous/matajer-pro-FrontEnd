@@ -73,8 +73,15 @@ const VariantFormDialog = ({ isOpen, onClose, productId, editGroup, onSaveSucces
   }, [isOpen, editGroup, isEditMode]);
 
   const handleAddSizeRow = () => {
-    setSizes([...sizes, { size: "", quantity: 0 }]);
-  };
+setSizes([
+      ...sizes, 
+      { 
+        size: "", 
+        quantity: 0, 
+        cost_price: costPrice !== "" ? Number(costPrice) : 0, 
+        selling_price: sellingPrice !== "" ? Number(sellingPrice) : 0 
+      }
+    ]);  };
 
 const handleRemoveSizeRow = async (index) => {
     const sizeToDelete = sizes[index];
@@ -126,6 +133,8 @@ const handleSubmit = async (e) => {
             id: s.id ? Number(s.id) : null,
             size: s.size,
             quantity: s.quantity !== "" ? Number(s.quantity) : 0,
+            cost_price: s.cost_price !== undefined ? Number(s.cost_price) : (costPrice !== "" ? Number(costPrice) : 0),
+        selling_price: s.selling_price !== undefined ? Number(s.selling_price) : (sellingPrice !== "" ? Number(sellingPrice) : 0),
           }))
         }
       ];
