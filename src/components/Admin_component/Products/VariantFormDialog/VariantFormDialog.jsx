@@ -13,9 +13,6 @@ const VariantFormDialog = ({ isOpen, onClose, productId, editGroup, onSaveSucces
 
   const [variantName, setVariantName] = useState("");
   const [color, setColor] = useState("#000000");
-  // ✅ هذه الحقول الثلاثة أصبحت على مستوى الموديل/اللون بأكمله، لأن الباك إند
-  // (colors_groups.*.cost_price / selling_price / sku) يطلبها هيك بالضبط، وليس
-  // داخل كل مقاس على حدة — الباك إند نفسه يولّد SKU فريد لكل مقاس تلقائياً
   const [costPrice, setCostPrice] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [sku, setSku] = useState("");
@@ -41,7 +38,6 @@ const VariantFormDialog = ({ isOpen, onClose, productId, editGroup, onSaveSucces
       setVariantName(editGroup.variant_name || "");
 
       setColor(editGroup.color || "#000000"); // ✅ لون افتراضي أسود إذا القيمة القادمة من السيرفر فاضية
-      console.log("Sizes from API:", editGroup.sizes);
 
       // ✅ نأخذ سعر التكلفة وسعر البيع من أول مقاس موجود (لأن كل مقاسات نفس
       // الموديل/اللون تشترك بنفس السعر أساساً حسب تصميم الباك إند)
@@ -73,15 +69,8 @@ const VariantFormDialog = ({ isOpen, onClose, productId, editGroup, onSaveSucces
   }, [isOpen, editGroup, isEditMode]);
 
   const handleAddSizeRow = () => {
-setSizes([
-      ...sizes, 
-      { 
-        size: "", 
-        quantity: 0, 
-        cost_price: costPrice !== "" ? Number(costPrice) : 0, 
-        selling_price: sellingPrice !== "" ? Number(sellingPrice) : 0 
-      }
-    ]);  };
+    setSizes([...sizes, { size: "", quantity: 0 }]);
+  };
 
 const handleRemoveSizeRow = async (index) => {
     const sizeToDelete = sizes[index];
@@ -133,8 +122,12 @@ const handleSubmit = async (e) => {
             id: s.id ? Number(s.id) : null,
             size: s.size,
             quantity: s.quantity !== "" ? Number(s.quantity) : 0,
-            cost_price: s.cost_price !== undefined ? Number(s.cost_price) : (costPrice !== "" ? Number(costPrice) : 0),
-        selling_price: s.selling_price !== undefined ? Number(s.selling_price) : (sellingPrice !== "" ? Number(sellingPrice) : 0),
+            // ✅ نفس منطق إصلاح الـ SKU بالضبط: الباك إند (updateVariant) بيقرأ
+            // sizeData.cost_price / sizeData.selling_price أولاً قبل أي حقل تاني،
+            // فمن دونهم كان عم يسقط على القيمة الافتراضية 0 لكل مقاس جديد
+            sku: cleanSku || "",
+            cost_price: costPrice !== "" ? Number(costPrice) : 0,
+            selling_price: sellingPrice !== "" ? Number(sellingPrice) : 0,
           }))
         }
       ];
@@ -242,7 +235,15 @@ const handleSubmit = async (e) => {
             </div>
 
             <div className="space-y-2">
-              {sizes.map((s, index) => (
+              {sizes.map((s, index) => {
+                // ✅ معاينة (Preview) فقط لشكل الـ SKU النهائي — نفس منطق الباك إند
+                // (base-size-xxxx)، بتبدأ دايماً بنفس SKU الموديل الأساسي.
+                // ما بترسل للسيرفر، السيرفر هو يولّد الكود الحقيقي بالـ suffix العشوائي.
+                const skuPreview = sku
+                  ? `${sku}-${s.size || '?'}-xxxx`
+                  : 'أدخل SKU الموديل أولاً بالأعلى';
+
+                return (
         <div key={index} className="flex flex-col gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 relative group animate-in fade-in duration-150">
 
           {/* السطر الأول: المقاس والكمية - يمتدان على كامل العرض بالتساوي */}
@@ -268,6 +269,14 @@ const handleSubmit = async (e) => {
             </div>
           </div>
 
+          {/* ✅ معاينة SKU المتوقع لهذا المقاس - للعرض فقط، غير قابلة للتعديل */}
+          <div className="flex items-center gap-2 px-1">
+            <span className="text-[10px] font-black text-slate-400">SKU المتوقع:</span>
+            <span className="text-[11px] font-bold text-slate-500 font-mono tracking-wide bg-white border border-slate-200/70 rounded-lg px-2 py-1">
+              {skuPreview}
+            </span>
+          </div>
+
           {/* زر الحذف */}
           {sizes.length > 1 && (
             <div className="flex justify-end">
@@ -282,7 +291,8 @@ const handleSubmit = async (e) => {
           )}
 
         </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
