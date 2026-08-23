@@ -1,64 +1,86 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Filter } from 'lucide-react';
+import { Filter, ChevronRight, ChevronLeft } from 'lucide-react';
 import SettlementItemCard from '../SettlementItemCard/SettlementItemCard';
 import SettlementDetailModal from '../SettlementDetailModal/SettlementDetailModal';
 import SettlementStats from '../SettlementStats/SettlementStats';
-import MyButton from '@/components/MyButton/MyButton';
 import Public_Alert from '@/components/Public_Alert/Public_Alert';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import DeleteConfirmView from '@/components/DeleteConfirmView/DeleteConfirmView';
-import { deleteSettlementFromServer, getFinancialReportsFromServer, getSettlementsFromServer } from './lib';
+import { getFinancialReportsFromServer, getSettlementsFromServer } from './lib';
 
 function Settlements() {
-  const [period, setPeriod] = useState('monthly'); 
+  const [period, setPeriod] = useState('today'); 
   const [customDates, setCustomDates] = useState({ from: '', to: '' });
-  
-  // معطل وموضوع في كومنت بناءً على رغبتك
-  // const [searchId, setSearchId] = useState('');
-  
+
+  // حالات ترقيم الصفحات محلياً (عرض 6 عناصر لكل صفحة)
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
+  const [actionLoading, SetActionLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // النوافذ المنبثقة
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState(null);
-  const [alertConfig, setAlertConfig] = useState({ isVisible: false, title: "", dis: "" });
+  // const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [alertConfig, SetAlertConfig] = useState({ isVisible: false, title: "", dis: "" });
 
   const [apiData, setApiData] = useState({
     statistics: { settlements_count: 0, total_gross_revenue: 0, total_expenses: 0, total_net_profit: 0 },
     data: []
   });
 
-  const triggerAlert = (title, dis) => {
-    setAlertConfig({ isVisible: true, title, dis });
-    setTimeout(() => setAlertConfig({ isVisible: false, title: "", dis: "" }), 2500);
+  // const triggerAlert = (title, dis) => {
+  //   setAlertConfig({ isVisible: true, title, dis });
+  //   setTimeout(() => setAlertConfig({ isVisible: false, title: "", dis: "" }), 2500);
+  // };
+
+  // دالة مساعدة لحساب تواريخ البدء والانتهاء بناءً على الـ period
+  const getDatesForPeriod = (selectedPeriod) => {
+    const today = new Date();
+    let from = '';
+    let to = today.toISOString().split('T')[0];
+
+    if (selectedPeriod === 'today') {
+      from = to;
+    } else if (selectedPeriod === 'weekly') {
+      const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+      from = firstDayOfWeek.toISOString().split('T')[0];
+    } else if (selectedPeriod === 'monthly') {
+      from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    } else if (selectedPeriod === 'yearly') {
+      from = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+    }
+    return { from, to };
   };
 
-  // 1. جلب البيانات بناءً على الأزرار الزمنية السريعة (Reports Endpoint)
+  // جلب البيانات (الإحصائيات والتسويات)
   const fetchReportData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await getFinancialReportsFromServer(period);
-      
-      if (res.success) {
-        setApiData({
+
+      // 1. جلب الإحصائيات حسب الفترة
+      const reportRes = await getFinancialReportsFromServer(period);
+      if (reportRes.success) {
+        setApiData(prev => ({
+          ...prev,
           statistics: {
-            settlements_count: res.summary.total_invoices,
-            total_gross_revenue: res.summary.gross_revenue,
-            total_expenses: res.summary.total_expenses,
-            total_net_profit: res.summary.net_profit
-          },
-          data: [] 
-        });
-        
-        const indexRes = await getSettlementsFromServer();
-        if (indexRes.success) {
-          setApiData(prev => ({ ...prev, data: indexRes.data }));
-        }
+            settlements_count: reportRes.summary.total_invoices,
+            total_gross_revenue: reportRes.summary.gross_revenue,
+            total_expenses: reportRes.summary.total_expenses,
+            total_net_profit: reportRes.summary.net_profit
+          }
+        }));
+      }
+
+      // 2. جلب التسويات الخاصة بالفترة
+      const { from, to } = getDatesForPeriod(period);
+      const indexRes = await getSettlementsFromServer(from, to);
+      if (indexRes.success) {
+        setApiData(prev => ({ ...prev, data: indexRes.data }));
+        setCurrentPage(1); // العودة للصفحة الأولى عند تغيير الفترة
       }
     } catch (err) {
       setError(err.message || "حدث خطأ أثناء مزامنة التقارير.");
@@ -71,7 +93,7 @@ function Settlements() {
     fetchReportData();
   }, [fetchReportData]);
 
-  // 2. فلترة مخصصة باستخدام تاريخ (من / إلى) عبر دالة index
+  // فلترة مخصصة باستخدام تاريخ (من / إلى)
   const handleCustomDateFilter = async () => {
     if (!customDates.from || !customDates.to) {
       alert("الرجاء اختيار تاريخ البدء وتاريخ الانتهاء أولاً");
@@ -86,6 +108,7 @@ function Settlements() {
           statistics: res.statistics,
           data: res.data
         });
+        setCurrentPage(1);
       }
     } catch (err) {
       setError(err.message || "فشلت فلترة البيانات المخصصة.");
@@ -94,39 +117,41 @@ function Settlements() {
     }
   };
 
-  const handleOpenDelete = (id) => {
-    setDeleteTargetId(id);
-    setIsDeleteOpen(true);
-  };
+  // const handleOpenDelete = (id) => {
+  //   setDeleteTargetId(id);
+  //   setIsDeleteOpen(true);
+  // };
 
-  const handleConfirmDelete = async () => {
-    setActionLoading(true);
-    try {
-      await deleteSettlementFromServer(deleteTargetId);
-      triggerAlert("تم حذف التسوية", "تمت إزالة القيود والبيانات المالية المرتبطة من السيرفر.");
-      setIsDeleteOpen(false);
-      fetchReportData();
-    } catch (err) {
-      alert(err.message || "فشل إتمام عملية الحذف");
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  // const handleConfirmDelete = async () => {
+  //   setActionLoading(true);
+  //   try {
+  //     await deleteSettlementFromServer(deleteTargetId);
+  //     triggerAlert("تم حذف التسوية", "تمت إزالة القيود والبيانات المالية المرتبطة من السيرفر.");
+  //     setIsDeleteOpen(false);
+  //     fetchReportData();
+  //   } catch (err) {
+  //     alert(err.message || "فشل إتمام عملية الحذف");
+  //   } finally {
+  //     setActionLoading(false);
+  //   }
+  // };
 
-  // تم إصلاح المتغير هنا ليمرر البيانات مباشرة بدون فلترة البحث المعطلة لتجنب خطأ الـ ReferenceError
-  const filteredSettlements = apiData.data;
+  // حساب العناصر الخاصة بالصفحة الحالية والعدد الإجمالي للصفحات
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentSettlements = apiData.data.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(apiData.data.length / itemsPerPage);
 
   return (
     <div className="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto space-y-6" dir="rtl">
       <Public_Alert isVisible={alertConfig.isVisible} title={alertConfig.title} dis={alertConfig.dis} />
 
-      {/* نافذة تأكيد الحذف */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <DialogContent className="max-w-md p-8 bg-[#050b1a] border-none text-white rounded-[24px]">
           <DeleteConfirmView 
             title="حذف القيد المالي"
             description="هل أنت متأكد من حذف هذه التسوية المالية نهائياً؟ هذا الإجراء قد يغير حسابات الأرباح والخسائر للفرع."
-            onConfirm={handleConfirmDelete}
+            // onConfirm={handleConfirmDelete}
             onCancel={() => setIsDeleteOpen(false)}
             isDeleting={actionLoading}
           />
@@ -156,19 +181,8 @@ function Settlements() {
 
       <SettlementStats statistics={apiData.statistics} />
 
-      {/* أدوات الفلترة الزمنية المخصصة */}
+      {/* أدوات الفلترة بالتاريخ المخصص */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-        {/* حقل البحث برقم التسوية معطل وموضوع بكومنت بناءً على طلبك */}
-        {/* <div className="lg:col-span-5">
-          <MyInput
-            type="text" 
-            placeholder="بحث برقم التسوية..." 
-            value={searchId}
-            onChange={(e) => setSearchId(e.target.value)}
-            Icon={<Search size={18} />} 
-          />
-        </div> */}
-
         <div className="lg:col-span-12 flex flex-col sm:flex-row gap-2 bg-white p-2 rounded-[24px] border border-slate-100 shadow-sm">
            <div className="flex-1 flex items-center gap-2 px-3">
              <span className="text-[10px] font-bold text-slate-400">من</span>
@@ -203,11 +217,54 @@ function Settlements() {
       ) : error ? (
         <div className="p-6 text-center bg-red-50 text-red-600 rounded-[24px] font-bold">{error}</div>
       ) : (
-        <SettlementItemCard 
-          settlementsData={filteredSettlements} 
-          onShow={(item) => { setSelectedId(item.id); setIsModalOpen(true); }} 
-          onDelete={handleOpenDelete} 
-        />
+        <>
+          <SettlementItemCard 
+            settlementsData={currentSettlements} 
+            onShow={(item) => { setSelectedId(item.id); setIsModalOpen(true); }} 
+            // onDelete={handleOpenDelete} 
+          />
+
+          {/* بار الترقيم (Pagination) السفلي الاحترافي بنظام الأرقام */}
+          {apiData.data.length > 0 && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-4 select-none">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronRight size={16} />
+              </button>
+
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200/60">
+                {Array.from({ length: totalPages }).map((_, pageIdx) => {
+                  const pageNumber = pageIdx + 1;
+                  const isSelected = currentPage === pageNumber;
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`w-9 h-9 text-xs font-black rounded-lg transition-all ${
+                        isSelected 
+                          ? 'bg-[#3198c1] text-white shadow-sm shadow-[#3198c1]/25' 
+                          : 'text-slate-500 hover:bg-white hover:text-[#0f172a]'
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft size={16} />
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {isModalOpen && (

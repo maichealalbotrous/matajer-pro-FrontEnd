@@ -1,9 +1,13 @@
 import { invoiceApi } from './api';
 
 // 1. getInvoices
-export const getInvoicesServer = async () => {
+export const getInvoicesServer = async (period = 'today') => {
   try {
-    const response = await invoiceApi.get('/index');
+    // 💡 إرسال الـ period كـ params (يقوم axios بوضعها تلقائياً بالشكل المناسب)
+    const response = await invoiceApi.get('/index', {
+      params: { period }
+    });
+    
     if (response.data && response.data.success) {
       return {
         statistics: response.data.statistics,
@@ -42,9 +46,10 @@ export const approveInvoiceServer = async (invoiceId) => {
 };
 
 // 4. approveAllInvoices -
-export const approveAllInvoicesServer = async () => {
+export const approveAllInvoicesServer = async (period) => {
   try {
-    const response = await invoiceApi.post('/approve-all');
+    // 💡 إرسال الـ period مع الطلب لكي يعتمده السيرفر للفترة المحددة فقط
+    const response = await invoiceApi.post('/approve-all', { period });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "حدث خطأ غير متوقع أثناء محاولة اعتماد الفواتير معاً." };
@@ -61,4 +66,18 @@ export const revertInvoiceApprovalServer = async (invoiceId) => {
    } catch (error) {
      throw error.response?.data || { message: "حدث خطأ أثناء حذف المصروف" };
    }
+};
+
+
+// 5. deleteInvoice
+export const deleteInvoiceServer = async (invoiceId) => {
+  try {
+    const response = await invoiceApi.delete('/deleteInvoice', { data: { id: invoiceId } });
+    if (response.data && response.data.success) {
+      return response.data;
+    }
+    throw new Error("فشل حذف الفاتورة");
+  } catch (error) {
+    throw error.response?.data || { message: "حدث خطأ أثناء محاولة حذف الفاتورة" };
+  }
 };

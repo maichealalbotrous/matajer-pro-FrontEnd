@@ -451,37 +451,51 @@ const EmployeeInvoicesManager = () => {
                       </div>
 
                       {/* ملاحظات الفاتورة إن وجدت */}
-                      {invoice.notes && (
+                      {invoice.type === 'return' || invoice.type === 'sale' ? (
                         <p className="text-xs font-bold text-slate-500 bg-amber-500/5 border border-amber-500/10 p-3.5 rounded-xl leading-relaxed text-right">
+                         
                           📝 ملاحظة الفاتورة: {invoice.notes}
                         </p>
-                      )}
+                      ):  <p className="text-xs font-bold text-slate-500 bg-amber-500/5 border border-amber-500/10 p-3.5 rounded-xl leading-relaxed text-right">
+                         
+                          📝 ملاحظة الفاتورة: فاتورة ابدال من  {invoice.notes}
+                        </p>}
 
                       {/* أزرار اتخاذ القرار المتجاوبة (عمودية على الموبايل، أفقية على الشاشات الأكبر) */}
-                      <div className="flex flex-col sm:flex-row gap-3 pt-1">
-                        <MyButton
-                          title={
-                            <div className="flex items-center justify-center gap-2">
-                              <RefreshCw size={14} />
-                              <span>إرجاع الأصناف المختارة</span>
-                            </div>
-                          }
-                          onClick={() => handleReturn(invoice)}
-                          disabled={actionLoadingId === invoice.id}
-                          className="w-full sm:flex-1 py-4 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100/70 rounded-2xl text-xs font-black transition-all active:scale-[0.99] justify-center"
-                        />
+                      {/* 💡 التحقق الشامل من كون الفاتورة إرجاع */}
+                      {!(invoice.type === 'return') ? (
+                        <div className="flex flex-col sm:flex-row gap-3 pt-1 w-full">
+                          <MyButton
+                            title={
+                              <div className="flex items-center justify-center gap-2">
+                                <RefreshCw size={14} />
+                                <span>إرجاع الأصناف المختارة</span>
+                              </div>
+                            }
+                            onClick={() => handleReturn(invoice)}
+                            disabled={actionLoadingId === invoice.id}
+                            className="w-full sm:flex-1 py-4 bg-red-50 text-red-600 border border-red-200 hover:bg-red-100/70 rounded-2xl text-xs font-black transition-all active:scale-[0.99] justify-center"
+                          />
 
-                        <MyButton
-                          title={
-                            <div className="flex items-center justify-center gap-2">
-                              <ArrowLeftRight size={14} />
-                              <span>استبدال الأصناف المختارة</span>
-                            </div>
-                          }
-                          onClick={() => handleExchange(invoice)}
-                          className="w-full sm:flex-1 py-4 bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100/70 rounded-2xl text-xs font-black transition-all active:scale-[0.99] justify-center"
-                        />
-                      </div>
+                          <MyButton
+                            title={
+                              <div className="flex items-center justify-center gap-2">
+                                <ArrowLeftRight size={14} />
+                                <span>استبدال الأصناف المختارة</span>
+                              </div>
+                            }
+                            onClick={() => handleExchange(invoice)}
+                            className="w-full sm:flex-1 py-4 bg-amber-50 text-amber-600 border border-amber-200 hover:bg-amber-100/70 rounded-2xl text-xs font-black transition-all active:scale-[0.99] justify-center"
+                          />
+                        </div>
+                      ) : (
+                        <div className="p-3.5 bg-slate-100/80 rounded-2xl text-center">
+                          <p className="text-xs font-bold text-slate-500">
+                            ℹ️ هذه الفاتورة عبارة عن سجل إرجاع مسبق ولا يمكن
+                            إجراء عمليات إرجاع أو استبدال عليها.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

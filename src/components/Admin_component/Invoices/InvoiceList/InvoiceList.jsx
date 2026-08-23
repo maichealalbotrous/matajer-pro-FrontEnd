@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, CheckCircle, RotateCcw, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Eye, CheckCircle, RotateCcw, Trash2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
-  // 💡 حالات الترقيم والتحكم بالصفحات
+function InvoiceList({ invoices = [], onView, onApprove, onRevert, onDelete }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const INVOICES_PER_PAGE = 5; // عدد الفواتير في الصفحة الواحدة
+  const INVOICES_PER_PAGE = 5;
 
-  // عند تغير مصفوفة الفواتير القادمة من الخارج، نعود تلقائياً للصفحة الأولى
   useEffect(() => {
     setCurrentPage(1);
   }, [invoices]);
 
-  // 💡 حسابات الترقيم وتحديد الفواتير المعروضة بالصفحة الحالية فقط
   const totalInvoices = invoices || [];
   const indexOfLastInvoice = currentPage * INVOICES_PER_PAGE;
   const indexOfFirstInvoice = indexOfLastInvoice - INVOICES_PER_PAGE;
   const currentInvoicesSlice = totalInvoices.slice(indexOfFirstInvoice, indexOfLastInvoice);
   const totalPages = Math.ceil(totalInvoices.length / INVOICES_PER_PAGE);
 
-  const Actions = ({ inv, onView, onApprove, onRevert }) => (
+  const Actions = ({ inv, onView, onApprove, onRevert, onDelete }) => (
     <div className="flex justify-center gap-2">
       <button 
         onClick={() => onView(inv.id)} 
@@ -28,6 +25,7 @@ function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
       >
         <Eye size={18} />
       </button>
+
       {inv.status === 'pending' ? (
         <button 
           onClick={() => onApprove(inv.id)} 
@@ -45,12 +43,20 @@ function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
           <RotateCcw size={18} />
         </button>
       )}
+
+      {/* 💡 زر الحذف الجديد */}
+      <button 
+        onClick={() => onDelete(inv.id)} 
+        className="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all"
+        title="حذف الفاتورة"
+      >
+        <Trash2 size={18} />
+      </button>
     </div>
   );
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-4" dir="rtl">
-      
       {/* عرض الجدول للشاشات الكبيرة */}
       {totalInvoices.length > 0 && (
         <div className="hidden md:block bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
@@ -78,7 +84,7 @@ function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
                   </TableCell>
                   <TableCell className="p-6 text-xs font-bold text-slate-400">{inv.invoice_date}</TableCell>
                   <TableCell className="p-6">
-                    <Actions inv={inv} onView={onView} onApprove={onApprove} onRevert={onRevert} />
+                    <Actions inv={inv} onView={onView} onApprove={onApprove} onRevert={onRevert} onDelete={onDelete} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -87,7 +93,7 @@ function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
         </div>
       )}
 
-      {/* عرض الكروت الهواتف المحمولة */}
+      {/* عرض الكروت للموبايل */}
       {totalInvoices.length > 0 && (
         <div className="md:hidden space-y-4">
           {currentInvoicesSlice.map((inv) => (
@@ -102,43 +108,38 @@ function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
               <div className="font-black">{parseFloat(inv.total_amount || 0).toLocaleString()} ل.س</div>
               <div className="border-t pt-3 flex justify-between items-center border-slate-100">
                 <span className="text-xs text-slate-400">{inv.invoice_date}</span>
-                <Actions inv={inv} onView={onView} onApprove={onApprove} onRevert={onRevert} />
+                <Actions inv={inv} onView={onView} onApprove={onApprove} onRevert={onRevert} onDelete={onDelete} />
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* حالة عدم وجود فواتير */}
       {totalInvoices.length === 0 && (
         <div className="p-16 text-center bg-white rounded-[32px] border border-dashed border-slate-200 text-slate-400 font-bold text-sm">
           لا توجد فواتير معروضة حالياً
         </div>
       )}
 
-      {/* 💡 بار الترقيم (Pagination) السفلي المتراص والمحاذى بشكل فاخر */}
+      {/* شريط الترقيم */}
       {totalInvoices.length > 0 && totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 pt-4 select-none">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-all"
           >
             <ChevronRight size={16} />
           </button>
-
           <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200/60">
             {Array.from({ length: totalPages }).map((_, pageIdx) => {
               const pageNumber = pageIdx + 1;
-              const isSelected = currentPage === pageNumber;
               return (
                 <button
                   key={pageNumber}
                   onClick={() => setCurrentPage(pageNumber)}
                   className={`w-9 h-9 text-xs font-black rounded-lg transition-all ${
-                    isSelected 
-                      ? 'bg-[#3198c1] text-white shadow-sm shadow-[#3198c1]/25' 
-                      : 'text-slate-500 hover:bg-white hover:text-[#0f172a]'
+                    currentPage === pageNumber ? 'bg-[#3198c1] text-white shadow-sm' : 'text-slate-500 hover:bg-white'
                   }`}
                 >
                   {pageNumber}
@@ -146,11 +147,10 @@ function InvoiceList({ invoices = [], onView, onApprove, onRevert }) {
               );
             })}
           </div>
-
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 transition-all"
           >
             <ChevronLeft size={16} />
           </button>

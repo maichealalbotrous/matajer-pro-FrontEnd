@@ -2,7 +2,7 @@ import React from 'react';
 import { FileText, Trash2, Eye } from 'lucide-react';
 import MyButton from '@/components/MyButton/MyButton';
 
-function SettlementItemCard({ settlementsData = [], onShow, onDelete }) {
+function SettlementItemCard({ settlementsData = [], onShow }) {
   if (!settlementsData.length) return (
     <div className="col-span-full py-20 text-center bg-white rounded-[32px] border border-dashed border-slate-200">
        <p className="text-slate-400 font-bold">لا توجد تسويات مالية مسجلة في هذه الفترة.</p>
@@ -100,12 +100,12 @@ function SettlementItemCard({ settlementsData = [], onShow, onDelete }) {
                   {profitLabel}
                 </span>
                 <span className={`text-xl font-black tracking-tight tabular-nums ${isNegative ? 'text-red-600' : 'text-[#0f172a]'}`}>
-                  {netProfitValue.toLocaleString('en-US')} <small className="text-[10px]">ر.س</small>
+                  {netProfitValue.toLocaleString('en-US')} <small className="text-[10px]">ل.س</small>
                 </span>
               </div>
               <div className="flex gap-2">
                 <MyButton title={<Eye size={18} />} onClick={() => onShow(item)} className="p-2 text-slate-300 hover:text-[#0f172a] transition-colors"/>
-                <MyButton title={<Trash2 size={18} />} onClick={() => onDelete(item.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors"/>
+                {/* <MyButton title={<Trash2 size={18} />} onClick={() => onDelete(item.id)} className="p-2 text-slate-300 hover:text-red-500 transition-colors"/> */}
               </div>
             </div>
           </div>

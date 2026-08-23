@@ -35,13 +35,13 @@ export const getSettlementDetailsFromServer = async (id) => {
 };
 
 // 4. deleteSettlement
-export const deleteSettlementFromServer = async (id) => {
- try {
-    const response = await settlementApi.delete('/delete', { 
-      data: { id: Number(id) } 
-    }); 
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "حدث خطأ أثناء حذف التسوية" };
-  }
-};
+// export const deleteSettlementFromServer = async (id) => {
+//  try {
+//     const response = await settlementApi.delete('/delete', { 
+//       data: { id: Number(id) } 
+//     }); 
+//     return response.data;
+//   } catch (error) {
+//     throw error.response?.data || { message: "حدث خطأ أثناء حذف التسوية" };
+//   }
+// };
