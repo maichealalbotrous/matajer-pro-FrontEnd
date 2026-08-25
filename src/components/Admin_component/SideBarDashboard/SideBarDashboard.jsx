@@ -126,12 +126,12 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
             <span className="text-[11px] font-bold text-slate-400">
               للتواصل والاستفسار
             </span>
-            <div
+            <a
               className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors"
               dir="ltr"
             >
               +963 930 942 741
-            </div>
+            </a>
 
             {/* التوقيع المخفي الأنيق الذي يظهر بنعومة */}
             <div className="text-[9px] font-bold text-slate-300 font-mono mt-2 pt-2 border-t border-slate-100 w-full tracking-wider group-hover:text-[#3198c1] transition-colors">
