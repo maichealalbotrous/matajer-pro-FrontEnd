@@ -7,7 +7,7 @@ import MyInput from "@/components/MyInput/MyInput";
 import MyButton from "@/components/MyButton/MyButton";
 import { LoginUser } from "./lib";
 import Public_Alert from "@/components/public_Alert/Public_Alert";
- import { handleAuthSubmit } from "./lib"; 
+import { handleAuthSubmit } from "./lib"; 
 import AuthHeader from "../AuthHeader/AuthHeader";
 import { useAuth } from "@/context/AuthContext/AuthContext";
 
@@ -16,7 +16,6 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ يتحكم بإظهار/إخفاء كلمة المرور كنص عادي بدل نقاط
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -31,10 +30,9 @@ export function LoginForm() {
     description: ""
   });
 
-  // onSubmit
-const { login } = useAuth();
+  const { login } = useAuth();
 
-const onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
     handleAuthSubmit({
         isLoginMode,
@@ -44,10 +42,10 @@ const onSubmit = (e) => {
         setAlertConfig,
         login 
     });
-};
-  return (
+  };
 
-    <div className="min-h-screen flex items-center justify-center p-4 antialiased " dir="rtl">
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 antialiased" dir="rtl">
      {AlertConfig.isVisible && (
         <Public_Alert 
           isVisible={AlertConfig.isVisible} 
@@ -67,43 +65,54 @@ const onSubmit = (e) => {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="p-0 space-y-6">
+        <CardContent className="p-0 space-y-5">
+          {/* الاسم الكامل */}
           {!isLoginMode && (
-            <MyInput 
-              placeholder="مثال: أحمد محمد" 
-              LabelTitle="الاسم الكامل" 
-              className="bg-slate-50 border-none rounded-2xl h-14 px-6 font-bold"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
+            <div className="space-y-1.5 text-right">
+              <label className="block text-sm font-bold text-black">
+                الاسم الكامل
+              </label>
+              <MyInput 
+                placeholder="مثال: أحمد محمد" 
+                className="bg-slate-50 border-none rounded-2xl h-14 px-6 font-bold"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+              />
+            </div>
           )}
           
-          <MyInput 
-            placeholder="مثال: 01012345678" 
-            LabelTitle="رقم الهاتف أو المستخدم" 
-            type="tel" 
-            className="bg-slate-50 border-none rounded-2xl h-14 px-6 font-bold"
-            value={formData.phone}
-            onChange={(e) => setFormData({...formData, phone: e.target.value})}
-          />
+          {/* رقم الهاتف أو المستخدم */}
+          <div className="space-y-1.5 text-right">
+            <label className="block text-sm font-bold text-black">
+              رقم الهاتف 
+            </label>
+            <MyInput 
+              placeholder="مثال: 01012345678" 
+              type="tel" 
+              className="bg-slate-50 border-none rounded-2xl h-14 px-6 font-bold"
+              value={formData.phone}
+              onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            />
+          </div>
           
-          <div className="space-y-2">
-            {/* ✅ غلاف relative عشان نقدر نحط زر إظهار/إخفاء كلمة المرور فوق الحقل */}
+          {/* كلمة المرور */}
+          <div className="space-y-1.5 text-right">
+            <label className="block text-sm font-bold text-black">
+              كلمة المرور
+            </label>
             <div className="relative">
               <MyInput 
                 placeholder="••••••••" 
-                LabelTitle="كلمة المرور" 
                 type={showPassword ? "text" : "password"} 
                 className="bg-slate-50 border-none rounded-2xl h-14 pr-6 pl-12 font-bold"
                 value={formData.password}
                 onChange={(e) => setFormData({...formData, password: e.target.value})}
               />
 
-              {/* ✅ زر إظهار/إخفاء كلمة المرور - بيبدّل بين text و password */}
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute left-4 bottom-[14px] text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 tabIndex={-1}
                 aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
               >
@@ -112,48 +121,42 @@ const onSubmit = (e) => {
             </div>
 
             {isLoginMode && (
-              <div className="flex justify-start px-1">
-                <button className="text-[11px] font-black text-[#3198c1] hover:text-[#257a9c]">نسيت كلمة المرور؟</button>
+              <div className="flex justify-start px-1 pt-1">
+                <button type="button" className="text-[11px] font-black text-[#3198c1] hover:text-[#257a9c]">نسيت كلمة المرور؟</button>
               </div>
             )}
           </div>
         </CardContent>
-      <CardFooter className="p-0 mt-8 flex flex-col items-center w-full">
-        {/* زر الدخول / إنشاء الحساب */}
-        <div className="w-full mb-5">
-          <MyButton 
-            className="bg-slate-900 hover:bg-slate-800 text-white w-full py-3.5 rounded-xl text-sm font-bold transition-all active:scale-[0.99] disabled:opacity-50"
-            title={loading ? "جاري المعالجة..." : (isLoginMode ? "دخول النظام ←" : "إنشاء الحساب ←")} 
-            onClick={onSubmit} 
-            disabled={loading}
-          />
-        </div>
 
-        {/* زر التبديل بين الدخول والإنشاء */}
-        <div className="text-center w-full mb-8">
-          <button 
-            type="button"
-            onClick={() => setIsLoginMode(!isLoginMode)}
-            className="text-xs font-black text-slate-400 hover:text-slate-700 transition-colors"
-          >
-            {isLoginMode ? "ليس لديك حساب؟ انشئ حساباً الآن" : "لديك حساب بالفعل؟ سجل الدخول الآن"}
-          </button>
-        </div>
+        <CardFooter className="p-0 mt-8 flex flex-col items-center w-full">
+          <div className="w-full mb-5">
+            <MyButton 
+              className="bg-slate-900 hover:bg-slate-800 text-white w-full py-3.5 rounded-xl text-sm font-bold transition-all active:scale-[0.99] disabled:opacity-50"
+              title={loading ? "جاري المعالجة..." : (isLoginMode ? "دخول النظام ←" : "إنشاء الحساب ←")} 
+              onClick={onSubmit} 
+              disabled={loading}
+            />
+          </div>
 
-        {/* توقيعك الأنيق مدمج بشكل انسيابي هادئ في ذيل البطاقة */}
-        <div className="w-full text-center border-t border-slate-100/70 pt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">
-          <p className="text-[10px] font-mono tracking-wider text-slate-600">
-            © 2026 matajer-Pro. Crafted with Code by{" "}
-            <span className="font-bold text-sm text-blue-800">ENG.Michael_Alboutros</span>
-          </p>
-        </div>
-      </CardFooter>
+          <div className="text-center w-full mb-8">
+            <button 
+              type="button"
+              onClick={() => setIsLoginMode(!isLoginMode)}
+              className="text-xs font-black text-slate-400 hover:text-slate-700 transition-colors"
+            >
+              {isLoginMode ? "ليس لديك حساب؟ انشئ حساباً الآن" : "لديك حساب بالفعل؟ سجل الدخول الآن"}
+            </button>
+          </div>
+
+          <div className="w-full text-center border-t border-slate-100/70 pt-4 opacity-40 hover:opacity-100 transition-opacity duration-300">
+            <p className="text-[10px] font-mono tracking-wider text-slate-600">
+              © 2026 matajer-Pro. Crafted with Code by{" "}
+              <span className="font-bold text-sm text-blue-800">ENG.Michael_Alboutros</span>
+            </p>
+          </div>
+        </CardFooter>
 
       </Card>
-      
-  
-
     </div>
-
   );
 }
