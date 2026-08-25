@@ -127,6 +127,7 @@ function SideBarDashboard({ isOpen, setIsOpen }) {
               للتواصل والاستفسار
             </span>
             <a
+              href="tel:+963930942741"
               className="text-xs font-black text-[#0f172a] tracking-wide hover:text-[#3198c1] transition-colors"
               dir="ltr"
             >
