@@ -18,8 +18,9 @@ const OTPInputForm = ({ value, onChange }) => {
         value={value}
         onChange={onChange}
         className="w-full"
-        // ✅ هذا النمط يخبر الحقل بقبول الحروف والأرقام معاً (أبجدي رقمي) بدلاً من الأرقام فقط
-        pattern="^[a-zA-Z0-9]*$" 
+         type="text"
+        inputMode="text"
+        pattern="^[a-zA-Z0-9]*$"
       >
         <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
           
