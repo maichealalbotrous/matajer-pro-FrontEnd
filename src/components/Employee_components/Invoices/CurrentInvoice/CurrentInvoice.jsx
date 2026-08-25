@@ -125,19 +125,19 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
   };
 
   return (
-    <div className="p-8 bg-[#fcfcfc] min-h-screen" dir="rtl">
+    <div className="p-4 sm:p-8 bg-[#fcfcfc] min-h-screen pb-32" dir="rtl">
       <SuccessAlert isVisible={showSuccessAlert} onClose={() => setShowSuccessAlert(false)} />
 
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/*table of invoice items*/}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-black text-[#0f172a] text-right">
+        <div className="lg:col-span-8 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#0f172a] text-right">
               {invoiceType === 'exchange' ? 'معالجة طلب استبدال مقاصي' : 'الفاتورة الحالية'}
             </h1>
             {invoiceType === 'exchange' && (
-              <span className="px-4 py-1.5 bg-amber-50 text-amber-600 border border-amber-200 rounded-full font-black text-xs flex items-center gap-1">
+              <span className="self-start sm:self-auto px-3 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full font-black text-xs flex items-center gap-1">
                 <ArrowLeftRight size={12} /> ربط بالفاتورة #{originalInvoiceId}
               </span>
             )}
@@ -158,13 +158,15 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
                   <RotateCcw size={14} /> 1. البضاعة المسترجعة من الزبون (سيتم إعادتها للمخزن)
                 </h3>
                 {returnedItems.length > 0 ? (
-                  <div className="space-y-3 p-4 bg-red-50/30 border border-red-100 rounded-[32px]">
+                  <div className="space-y-3 divide-y divide-slate-100">
                     {returnedItems.map((item, index) => (
-                      <InvoiceItem key={`ret-${index}`} item={item} index={index} onRemove={removeReturnedItem} isReturnStyle={true} />
+                      <div key={`ret-${index}`} className="pt-3 first:pt-0">
+                        <InvoiceItem item={item} index={index} onRemove={removeReturnedItem} isReturnStyle={true} />
+                      </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="py-8 text-center bg-white rounded-[24px] border border-dashed border-slate-200">
+                  <div className="py-8 text-center border border-dashed border-slate-200 rounded-2xl">
                     <p className="text-slate-400 text-sm font-bold">لا يوجد أصناف مسترجعة.</p>
                   </div>
                 )}
@@ -176,13 +178,15 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
                   <ShoppingBag size={14} /> 2. البضاعة البديلة الجديدة (المضافة من شاشة المنتجات)
                 </h3>
                 {cartItems.length > 0 ? (
-                  <div className="space-y-3 p-4 bg-green-50/30 border border-green-100 rounded-[32px]">
+                  <div className="space-y-3 divide-y divide-slate-100">
                     {cartItems.map((item, index) => (
-                      <InvoiceItem key={`new-${index}`} item={item} index={index} onRemove={removeNewItem} />
+                      <div key={`new-${index}`} className="pt-3 first:pt-0">
+                        <InvoiceItem item={item} index={index} onRemove={removeNewItem} />
+                      </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="py-12 text-center bg-white rounded-[32px] border-2 border-dashed border-slate-100">
+                  <div className="py-12 text-center border-2 border-dashed border-slate-100 rounded-2xl">
                     <FileText size={32} className="mx-auto text-slate-200 mb-2" />
                     <p className="text-slate-400 font-bold text-sm">قم باختيار الموديلات الجديدة البديلة من قائمة المنتجات</p>
                   </div>
@@ -192,13 +196,15 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
             </div>
           ) : (
             cartItems.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-3 divide-y divide-slate-100">
                 {cartItems.map((item, index) => (
-                  <InvoiceItem key={index} item={item} index={index} onRemove={removeItem} />
+                  <div key={index} className="pt-3 first:pt-0">
+                    <InvoiceItem item={item} index={index} onRemove={removeItem} />
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="py-20 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-100">
+              <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-[32px]">
                 <FileText size={48} className="mx-auto text-slate-200 mb-4" />
                 <p className="text-slate-400 font-bold">السلة فارغة</p>
               </div>
