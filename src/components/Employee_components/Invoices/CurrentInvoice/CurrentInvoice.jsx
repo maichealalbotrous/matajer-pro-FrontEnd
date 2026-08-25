@@ -158,7 +158,7 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
                   <RotateCcw size={14} /> 1. البضاعة المسترجعة من الزبون (سيتم إعادتها للمخزن)
                 </h3>
                 {returnedItems.length > 0 ? (
-                  <div className="space-y-3 divide-y divide-slate-100">
+                  <div className="space-y-3 divide-y divide-slate-100 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
                     {returnedItems.map((item, index) => (
                       <div key={`ret-${index}`} className="pt-3 first:pt-0">
                         <InvoiceItem item={item} index={index} onRemove={removeReturnedItem} isReturnStyle={true} />
@@ -178,7 +178,7 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
                   <ShoppingBag size={14} /> 2. البضاعة البديلة الجديدة (المضافة من شاشة المنتجات)
                 </h3>
                 {cartItems.length > 0 ? (
-                  <div className="space-y-3 divide-y divide-slate-100">
+                  <div className="space-y-3 divide-y divide-slate-100 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
                     {cartItems.map((item, index) => (
                       <div key={`new-${index}`} className="pt-3 first:pt-0">
                         <InvoiceItem item={item} index={index} onRemove={removeNewItem} />
@@ -196,7 +196,7 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
             </div>
           ) : (
             cartItems.length > 0 ? (
-              <div className="space-y-3 divide-y divide-slate-100">
+              <div className="space-y-3 divide-y divide-slate-100 bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
                 {cartItems.map((item, index) => (
                   <div key={index} className="pt-3 first:pt-0">
                     <InvoiceItem item={item} index={index} onRemove={removeItem} />
