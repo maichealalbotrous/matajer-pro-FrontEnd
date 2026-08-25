@@ -14,10 +14,12 @@ const OTPInputForm = ({ value, onChange }) => {
       </div>
 
       <InputOTP 
-        maxLength={12} 
+        maxLength={8} // تم تعديلها إلى 8 مطابقة لعدد الخانات الفعلية
         value={value}
         onChange={onChange}
         className="w-full"
+        // ✅ هذا النمط يخبر الحقل بقبول الحروف والأرقام معاً (أبجدي رقمي) بدلاً من الأرقام فقط
+        pattern="^[a-zA-Z0-9]*$" 
       >
         <div className="flex flex-wrap items-center justify-center gap-1 sm:gap-2">
           
@@ -44,7 +46,6 @@ const OTPInputForm = ({ value, onChange }) => {
               />
             ))}
           </InputOTPGroup>
-
 
         </div>
       </InputOTP>

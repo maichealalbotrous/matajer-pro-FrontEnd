@@ -15,6 +15,8 @@ const OTPHeader = function() {
         <h1 className="text-3xl font-black text-[#0f172a]">رمز التحقق</h1>
         <p className="text-slate-400 font-bold px-4 text-sm">
           أدخل الرمز المكون من 6 أرقام المرسل إليك
+
+      (في حال عدم امتلاك كود يرجى التواصل على الرقم (+963930942741)  )
         </p>
       </div>
 
