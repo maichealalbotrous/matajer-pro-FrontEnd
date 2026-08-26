@@ -63,7 +63,7 @@ const CurrentInvoice = ({ cartItems, setCartItems }) => {
         if (cartItems.length === 0) throw new Error("الفاتورة فارغة! يرجى إضافة أصناف أولاً.");
         
         const payload = {
-          notes: notes || "فاتورة مبيعات مباشرة",
+          notes: notes ,
           items: cartItems.map(item => ({
             variant_id: Number(item.variant_id),
             quantity: Number(item.quantity),
