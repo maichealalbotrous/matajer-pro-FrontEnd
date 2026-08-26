@@ -12,7 +12,7 @@ const InvoiceItem = ({ item, index, onRemove, isReturnStyle = false }) => (
       <p className="text-slate-400 font-medium text-xs mt-0.5 flex items-center gap-2 flex-wrap">
         {item.size && item.size !== '-' && <span>القياس: {item.size}</span>}
         {item.size && item.size !== '-' && <span>•</span>}
-        <span>الكمية: {item.quantity}</span>
+        <p>الكمية: {item.quantity}</p>
         {isReturnStyle && <span className="text-red-500 font-bold">(مسترجع)</span>}
       </p>
     </div>

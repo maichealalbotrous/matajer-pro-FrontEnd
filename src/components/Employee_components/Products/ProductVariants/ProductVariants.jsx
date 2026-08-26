@@ -130,7 +130,7 @@ const ProductVariants = ({ addToInvoice }) => {
 
     const newItem = {
       variant_id: selectedSizeVariant.id,
-      variant_name: `${parentVariant.variant_name || ''} (${parentVariant.color || ''}) - قياس ${selectedSizeVariant.size}`,
+      variant_name: `${parentVariant.variant_name || ''} `,
       sku: selectedSizeVariant.sku,
       size: selectedSizeVariant.size,
       quantity: parseInt(saleDetails.quantity) || 1,
