@@ -15,9 +15,8 @@ const InvoiceSummaryContent = ({
   onSubmit,
   disabled,
   isExchangeMode,
-  exchangeDetails
+  exchangeDetails,
 }) => {
-
   const types = [
     { id: 'sale', label: 'بيع مباشرة', icon: CreditCard },
     { id: 'exchange', label: 'تبديل مقاصي', icon: ArrowLeftRight },
@@ -28,7 +27,7 @@ const InvoiceSummaryContent = ({
       {/* Selector */}
       <div className="flex gap-2 mb-8 bg-white/5 p-2 rounded-2xl" dir="rtl">
         {types.map((type) => (
-          <button 
+          <button
             key={type.id}
             type="button"
             onClick={() => !disabled && setInvoiceType(type.id)}
@@ -41,9 +40,11 @@ const InvoiceSummaryContent = ({
 
       {(invoiceType === 'return' || invoiceType === 'exchange') && (
         <div className="mb-6 animate-in fade-in slide-in-from-top-2 text-right">
-          <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">رقم الفاتورة الأصلية</label>
-          <input 
-            type="text" 
+          <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">
+            رقم الفاتورة الأصلية
+          </label>
+          <input
+            type="text"
             className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] text-right text-white"
             value={originalInvoiceId}
             onChange={(e) => setOriginalInvoiceId(e.target.value)}
@@ -51,19 +52,22 @@ const InvoiceSummaryContent = ({
           />
         </div>
       )}
-{
-    !isExchangeMode&&!exchangeDetails&&(
-<div className="mb-8 text-right">
-        <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">ملاحظات عامة</label>
-        <textarea 
-          className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] min-h-[80px] text-right text-white"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="اكتب أي ملاحظات إضافية هنا..."
-        />
-      </div>)
-}
 
+      <div className="mb-8 text-right">
+        {invoiceType !== 'exchange' && (
+          <div>
+            <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">
+              ملاحظات عامة
+            </label>
+            <textarea
+              className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] min-h-[80px] text-right text-white"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="اكتب أي ملاحظات إضافية هنا..."
+            />
+          </div>
+        )}
+      </div>
       {/*exchangeDetails */}
       {isExchangeMode && exchangeDetails && (
         <div className="bg-white/5 rounded-2xl p-4 mb-6 space-y-3 text-xs font-bold border border-white/5 animate-in fade-in">
@@ -81,10 +85,14 @@ const InvoiceSummaryContent = ({
       <div className="border-t border-white/10 pt-6 mb-8">
         <div className="flex justify-between items-center">
           <span className="text-slate-400 font-bold">
-            {invoiceType === 'exchange' ? 'صافي التسوية (المطالب به)' : 'المبلغ الإجمالي'}
+            {invoiceType === 'exchange'
+              ? 'صافي التسوية (المطالب به)'
+              : 'المبلغ الإجمالي'}
           </span>
           <div className="text-left">
-            <span className={`text-4xl font-black ${totalAmount >= 0 ? 'text-white' : 'text-amber-400'}`}>
+            <span
+              className={`text-4xl font-black ${totalAmount >= 0 ? 'text-white' : 'text-amber-400'}`}
+            >
               {totalAmount?.toLocaleString()}
             </span>
             <span className="text-xs font-black text-[#3198c1] mr-1">ل.س</span>
@@ -92,13 +100,18 @@ const InvoiceSummaryContent = ({
         </div>
         {invoiceType === 'exchange' && (
           <p className="text-[10px] text-slate-400 mt-2 text-left font-medium">
-            *{totalAmount > 0 ? "يدفع الزبون الفارق للصندوق" : totalAmount < 0 ? "يتم إرجاع الفارق نقداً للزبون" : "مقاصة متعادلة تماماً"}
+            *
+            {totalAmount > 0
+              ? 'يدفع الزبون الفارق للصندوق'
+              : totalAmount < 0
+                ? 'يتم إرجاع الفارق نقداً للزبون'
+                : 'مقاصة متعادلة تماماً'}
           </p>
         )}
       </div>
 
       <MyButton
-        title={disabled ? "جاري الحفظ والتدقيق..." : "تأكيد وإرسال الفاتورة"} 
+        title={disabled ? 'جاري الحفظ والتدقيق...' : 'تأكيد وإرسال الفاتورة'}
         onClick={onSubmit}
         disabled={disabled}
         className="w-full py-5 bg-white text-[#050b1a] hover:bg-slate-200 shadow-xl disabled:opacity-50 transition-all font-black rounded-2xl"
