@@ -1,17 +1,17 @@
 import React from 'react';
-import { Trash2, RotateCcw } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 const InvoiceItem = ({ item, index, onRemove, isReturnStyle = false }) => (
   <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-b-0 text-right gap-2">
     
-    {/* تفاصيل المنتج: الاسم، القياس، والكمية فقط (بدون أي ذكر للون) */}
+    {/* تفاصيل المنتج: الاسم والقياس والكمية فقط (بدون أي أثر للون أو الرموز) */}
     <div className="flex-1 min-w-0">
       <h3 className="font-black text-slate-800 text-sm truncate">
-        {item.variant_name || item.model_name || `موديل #${item.variant_id}`}
+        {item.product} - {item.variant_name}
       </h3>
       <p className="text-slate-400 font-medium text-xs mt-0.5 flex items-center gap-2 flex-wrap">
-        {item.size && <span>{item.size}</span>}
-        {item.size && <span>•</span>}
+        {item.size && item.size !== '-' && <span>القياس: {item.size}</span>}
+        {item.size && item.size !== '-' && <span>•</span>}
         <span>الكمية: {item.quantity}</span>
         {isReturnStyle && <span className="text-red-500 font-bold">(مسترجع)</span>}
       </p>
