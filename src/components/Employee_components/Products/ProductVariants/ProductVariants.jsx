@@ -135,7 +135,7 @@ const ProductVariants = ({ addToInvoice }) => {
       size: selectedSizeVariant.size,
       quantity: parseInt(saleDetails.quantity) || 1,
       sold_at_price: parseFloat(saleDetails.sold_at_price),
-      item_notes: saleDetails.item_notes,
+      item_notes: saleDetails.item_notes || "",
     };
 
     addToInvoice(newItem);
@@ -201,7 +201,7 @@ const ProductVariants = ({ addToInvoice }) => {
           }
         />
 
-        <div className="flex flex-col gap-2 text-right">
+        {/* <div className="flex flex-col gap-2 text-right">
           <label className="text-xs font-black text-slate-400 mr-2 uppercase tracking-wider">
             ملاحظات البند
           </label>
@@ -217,7 +217,7 @@ const ProductVariants = ({ addToInvoice }) => {
               })
             }
           />
-        </div>
+        </div> */}
 
         <MyButton
           title="إضافة للفاتورة الحالية"
