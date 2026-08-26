@@ -4,7 +4,7 @@ import { Trash2, RotateCcw } from 'lucide-react';
 const InvoiceItem = ({ item, index, onRemove, isReturnStyle = false }) => (
   <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-b-0 text-right gap-2">
     
-    {/* تفاصيل المنتج: الاسم، القياس، والكمية (بدون مربعات ألوان أو أرقام خلفية) */}
+    {/* تفاصيل المنتج: الاسم، القياس، والكمية فقط (بدون أي ذكر للون) */}
     <div className="flex-1 min-w-0">
       <h3 className="font-black text-slate-800 text-sm truncate">
         {item.variant_name || item.model_name || `موديل #${item.variant_id}`}
