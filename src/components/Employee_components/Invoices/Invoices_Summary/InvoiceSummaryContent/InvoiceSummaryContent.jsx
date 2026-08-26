@@ -51,8 +51,9 @@ const InvoiceSummaryContent = ({
           />
         </div>
       )}
-
-      <div className="mb-8 text-right">
+{
+    !isExchangeMode&&!exchangeDetails&&(
+<div className="mb-8 text-right">
         <label className="text-[10px] font-black text-slate-400 mr-2 mb-2 block">ملاحظات عامة</label>
         <textarea 
           className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none focus:ring-2 focus:ring-[#3198c1] min-h-[80px] text-right text-white"
@@ -60,7 +61,8 @@ const InvoiceSummaryContent = ({
           onChange={(e) => setNotes(e.target.value)}
           placeholder="اكتب أي ملاحظات إضافية هنا..."
         />
-      </div>
+      </div>)
+}
 
       {/*exchangeDetails */}
       {isExchangeMode && exchangeDetails && (
